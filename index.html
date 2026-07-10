@@ -100,7 +100,7 @@
     <div class="bg-glow"></div>
     <div id="particle-container"></div>
 
-    <header class="glass sticky top-0 z-40 px-4 py-3 flex items-center justify-between">
+    <header class="glass sticky top-0 z-40 px-4 py-3 flex items-center justify-between transition-all duration-300" id="main-header">
         <div class="flex items-center gap-3">
             <img src="https://i.postimg.cc/GpwttdxX/Logo-Kopi-Kenangan-Format-PNG-AI-EPS-CDR-PDF-SVG.png" alt="Logo Kopi Kenangan" class="w-10 h-10 object-contain drop-shadow-sm">
             <div>
@@ -108,9 +108,9 @@
                 <p class="text-xs text-kenangan-primary font-medium">Sistem Bantu Order Praktis</p>
             </div>
         </div>
-        <button onclick="scrollToCart()" class="relative p-2 text-kenangan-dark">
-            <i class="fas fa-shopping-bag text-xl"></i>
-            <span id="cart-badge" class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center hidden">0</span>
+        <button id="cart-icon-btn" onclick="scrollToCart()" class="relative p-2 text-kenangan-dark transition-all duration-300">
+            <i class="fas fa-shopping-bag text-xl transform transition-transform duration-300" id="cart-icon"></i>
+            <span id="cart-badge" class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center hidden transition-transform duration-300">0</span>
         </button>
     </header>
 
@@ -199,6 +199,24 @@
     <footer class="mt-12 mb-20 text-center text-xs text-kenangan-dark/60 font-medium">
         <p>Promo by Bintang &copy; 2026</p>
     </footer>
+
+    <!-- Fullscreen Thank You Animation -->
+    <div id="thankyou-screen" class="fixed inset-0 z-[100] glass-dark flex flex-col items-center justify-center hidden opacity-0 transition-opacity duration-500">
+        <div class="text-center scale-75 opacity-0 transition-all duration-700 delay-100 flex flex-col items-center" id="thankyou-content">
+            <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(232,163,89,0.4)]">
+                <i class="fas fa-coffee text-5xl text-kenangan-accent animate-bounce"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-white mb-3">Pesanan Dirangkai!</h2>
+            <p class="text-kenangan-light/80 text-sm leading-relaxed">Terima kasih atas pesananmu.<br>Sistem sedang mengalihkanmu ke WhatsApp...</p>
+            
+            <!-- Loading Dots -->
+            <div class="flex gap-2 mt-6">
+                <div class="w-3 h-3 bg-kenangan-accent rounded-full animate-bounce" style="animation-delay: 0s;"></div>
+                <div class="w-3 h-3 bg-kenangan-accent rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                <div class="w-3 h-3 bg-kenangan-accent rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
+            </div>
+        </div>
+    </div>
 
     <div id="modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300" onclick="closeModal(event)">
         <div id="modal-content" class="absolute bottom-0 left-0 w-full bg-white rounded-t-3xl shadow-2xl modal-enter max-h-[85vh] flex flex-col" onclick="event.stopPropagation()">
@@ -552,10 +570,57 @@
             updateCartUI();
             validateForm();
 
+            // Panggil Animasi Keren
+            playFlyToCartAnimation();
+
             // Minimalist feedback
             const btn = document.querySelector('#btn-submit');
             btn.innerHTML = '<i class="fas fa-check"></i> Ditambahkan';
             setTimeout(() => btn.innerHTML = '<i class="fab fa-whatsapp text-xl"></i> Kirim Pesanan Ke WA', 1000);
+        }
+
+        function playFlyToCartAnimation() {
+            const cartBtn = document.getElementById('cart-icon-btn');
+            const cartIcon = document.getElementById('cart-icon');
+            const badge = document.getElementById('cart-badge');
+            const rect = cartBtn.getBoundingClientRect();
+
+            // Buat elemen terbang
+            const flyer = document.createElement('div');
+            flyer.innerHTML = '<i class="fas fa-coffee text-white text-xl"></i>';
+            flyer.className = 'fixed z-[100] flex items-center justify-center w-12 h-12 bg-kenangan-primary rounded-full shadow-lg';
+            
+            // Mulai dari tengah bawah (posisi perkiraan saat modal ditutup)
+            flyer.style.left = '50%';
+            flyer.style.top = '70%';
+            flyer.style.transform = 'translate(-50%, -50%) scale(0)';
+            flyer.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+            document.body.appendChild(flyer);
+
+            // Trigger reflow agar animasi langsung jalan
+            flyer.getBoundingClientRect();
+
+            // Step 1: Muncul pop-up di tengah
+            flyer.style.transform = 'translate(-50%, -50%) scale(1)';
+
+            // Step 2: Terbang ke arah ikon keranjang di atas
+            setTimeout(() => {
+                flyer.style.left = `${rect.left + rect.width / 2}px`;
+                flyer.style.top = `${rect.top + rect.height / 2}px`;
+                flyer.style.transform = 'translate(-50%, -50%) scale(0.2)';
+                flyer.style.opacity = '0';
+            }, 400);
+
+            // Step 3: Efek pantulan pada keranjang setelah elemen sampai
+            setTimeout(() => {
+                flyer.remove();
+                cartIcon.classList.add('scale-150', 'text-kenangan-primary');
+                badge.classList.add('scale-150');
+                setTimeout(() => {
+                    cartIcon.classList.remove('scale-150', 'text-kenangan-primary');
+                    badge.classList.remove('scale-150');
+                }, 300);
+            }, 900);
         }
 
         function removeFromCart(index) {
@@ -698,7 +763,31 @@ Mohon dibantu proses order ya, terima kasih!`;
             const waNumber = "6285959633342";
             const waUrl = `https://wa.me/${waNumber}?text=${encodedMessage}`;
             
-            window.open(waUrl, '_blank');
+            // Animasi Fullscreen Terima Kasih sebelum pindah ke WA
+            const thankyouScreen = document.getElementById('thankyou-screen');
+            const thankyouContent = document.getElementById('thankyou-content');
+            
+            // Tampilkan Layar Transisi
+            thankyouScreen.classList.remove('hidden');
+            setTimeout(() => thankyouScreen.classList.remove('opacity-0'), 10);
+            
+            setTimeout(() => {
+                thankyouContent.classList.remove('scale-75', 'opacity-0');
+                thankyouContent.classList.add('scale-100', 'opacity-100');
+            }, 100);
+
+            // Tunggu 2.5 detik lalu buka WA
+            setTimeout(() => {
+                window.open(waUrl, '_blank');
+                
+                // Sembunyikan layar transisi pelan-pelan setelah WA terbuka
+                setTimeout(() => {
+                    thankyouScreen.classList.add('opacity-0');
+                    thankyouContent.classList.remove('scale-100', 'opacity-100');
+                    thankyouContent.classList.add('scale-75', 'opacity-0');
+                    setTimeout(() => thankyouScreen.classList.add('hidden'), 500);
+                }, 1000);
+            }, 2500);
         }
 
         function scrollToCart() {
