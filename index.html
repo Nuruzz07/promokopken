@@ -192,7 +192,7 @@
         </div>
 
         <button id="btn-submit" disabled onclick="submitOrder()" class="w-full mt-4 bg-gray-400 text-white font-bold py-3 rounded-xl shadow-lg transition duration-300 flex justify-center items-center gap-2 cursor-not-allowed">
-            <i class="fab fa-whatsapp text-xl"></i> Kirim Pesanan Ke WA
+            <i class="fas fa-paper-plane text-xl"></i> Kirim Pesanan Sekarang
         </button>
     </section>
 
@@ -221,7 +221,7 @@
                 <div class="w-3 h-3 bg-kenangan-accent rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
             </div>
             
-            <p class="text-white/40 text-[10px] mt-6 text-center">Tunggu sebentar, lagi dandanin keranjangmu... (5 Detik)</p>
+            <p class="text-white/40 text-[10px] mt-6 text-center">Pesananmu sudah masuk ke sistem kasir secara otomatis.</p>
         </div>
     </div>
 
@@ -611,7 +611,7 @@
             // Minimalist feedback di tombol bawah
             const btn = document.querySelector('#btn-submit');
             btn.innerHTML = '<i class="fas fa-check"></i> Ditambahkan';
-            setTimeout(() => btn.innerHTML = '<i class="fab fa-whatsapp text-xl"></i> Kirim Pesanan Ke WA', 1000);
+            setTimeout(() => btn.innerHTML = '<i class="fas fa-paper-plane text-xl"></i> Kirim Pesanan Sekarang', 1000);
         }
 
         function playFlyToCartAnimation() {
@@ -793,46 +793,70 @@ Total Sementara (Web): ${formatRp(total)}
 Mohon dibantu proses order ya, terima kasih!`;
 
             const encodedMessage = encodeURIComponent(message);
-            const waNumber = "6285959633342";
-            const waUrl = `https://wa.me/${waNumber}?text=${encodedMessage}`;
             
-            // KOLEKSI PANTUN (BARU)
+            // --- TELEGRAM INTEGRATION ---
+            // MASUKKAN TOKEN DAN CHAT ID KAMU DI BAWAH INI:
+            const botToken = "TOKEN_BOT_KAMU"; 
+            const chatId = "CHAT_ID_KAMU";
+            const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodedMessage}`;
+            
+            // KOLEKSI PANTUN (BARU - TANPA KATA WA)
             const quotes = [
                 "Beli kopi buat begadang,<br>Jangan lupa bayar pakai uang.<br>Terima kasih sudah datang,<br>Pesananmu segera direkap sayang! ☕",
-                "Jalan-jalan ke Cileunyi,<br>Jangan lupa mampir ngopi.<br>Pesananmu diproses di sini,<br>Siap dikirim ke WA ntar lagi! ✨",
-                "Mantan boleh menjauh, tapi pesanan Kopi Kenangan bakal makin mendekat!<br>Sistem beralih ke WhatsApp...",
+                "Jalan-jalan ke Cileunyi,<br>Jangan lupa mampir ngopi.<br>Pesananmu diproses di sini,<br>Siap diracik kasir ntar lagi! ✨",
+                "Mantan boleh menjauh, tapi pesanan Kopi Kenangan bakal makin mendekat!<br>Sistem meneruskan ke kasir otomatis...",
                 "Pergi ke pasar beli melati,<br>Pulangnya beli Kenangan Mantan.<br>Pesananmu sudah kami dapati,<br>Siap meluncur ke tujuan! 🚀",
-                "Biar diread doang sama gebetan, yang penting pesanan Kopi Kenangan tetep jalan.<br>Siapin chat WA kamu ya!"
+                "Biar diread doang sama gebetan, yang penting pesanan Kopi Kenangan tetep jalan.<br>Silakan datang ambil di outlet ya!"
             ];
 
-            const thankyouScreen = document.getElementById('thankyou-screen');
-            const thankyouContent = document.getElementById('thankyou-content');
-            const quoteEl = document.getElementById('thankyou-quote');
-            
-            // Acak pantun/quote
-            quoteEl.innerHTML = quotes[Math.floor(Math.random() * quotes.length)];
-            
-            // Tampilkan Layar Transisi
-            thankyouScreen.classList.remove('hidden');
-            setTimeout(() => thankyouScreen.classList.remove('opacity-0'), 10);
-            
-            setTimeout(() => {
-                thankyouContent.classList.remove('scale-75', 'opacity-0');
-                thankyouContent.classList.add('scale-100', 'opacity-100');
-            }, 100);
+            const btn = document.getElementById('btn-submit');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i> Mengirim...';
+            btn.disabled = true;
 
-            // Tunggu 5 DETIK lalu buka WA
-            setTimeout(() => {
-                window.open(waUrl, '_blank');
-                
-                // Sembunyikan layar transisi pelan-pelan setelah WA terbuka
-                setTimeout(() => {
-                    thankyouScreen.classList.add('opacity-0');
-                    thankyouContent.classList.remove('scale-100', 'opacity-100');
-                    thankyouContent.classList.add('scale-75', 'opacity-0');
-                    setTimeout(() => thankyouScreen.classList.add('hidden'), 500);
-                }, 1000);
-            }, 5000); // <- Waktu sudah disesuaikan jadi 5 detik
+            fetch(telegramUrl)
+                .then(response => {
+                    if(response.ok) {
+                        const thankyouScreen = document.getElementById('thankyou-screen');
+                        const thankyouContent = document.getElementById('thankyou-content');
+                        const quoteEl = document.getElementById('thankyou-quote');
+                        
+                        quoteEl.innerHTML = quotes[Math.floor(Math.random() * quotes.length)];
+                        
+                        thankyouScreen.classList.remove('hidden');
+                        setTimeout(() => thankyouScreen.classList.remove('opacity-0'), 10);
+                        
+                        setTimeout(() => {
+                            thankyouContent.classList.remove('scale-75', 'opacity-0');
+                            thankyouContent.classList.add('scale-100', 'opacity-100');
+                        }, 100);
+
+                        // Tunggu 5 DETIK, lalu tutup layar dan reset keranjang (Tanpa buka WA)
+                        setTimeout(() => {
+                            thankyouScreen.classList.add('opacity-0');
+                            thankyouContent.classList.remove('scale-100', 'opacity-100');
+                            thankyouContent.classList.add('scale-75', 'opacity-0');
+                            setTimeout(() => {
+                                thankyouScreen.classList.add('hidden');
+                                // Reset keranjang setelah berhasil
+                                cart = [];
+                                updateCartUI();
+                                document.getElementById('cust-name').value = '';
+                                document.getElementById('cust-notes').value = '';
+                                document.getElementById('cust-city').selectedIndex = 0;
+                                handleCityChange();
+                            }, 500);
+                        }, 5000); 
+                    } else {
+                        showToast("Gagal mengirim pesanan. Periksa Chat ID atau Token.");
+                    }
+                })
+                .catch(error => {
+                    showToast("Terjadi kesalahan koneksi internet.");
+                })
+                .finally(() => {
+                    btn.innerHTML = '<i class="fas fa-paper-plane text-xl"></i> Kirim Pesanan Sekarang';
+                    validateForm();
+                });
         }
 
         function scrollToCart() {
