@@ -191,16 +191,21 @@
             </p>
         </div>
 
-        <button id="btn-submit" disabled onclick="submitOrder()" class="w-full mt-4 bg-gray-400 text-white font-bold py-3 rounded-xl shadow-lg transition duration-300 flex justify-center items-center gap-2 cursor-not-allowed">
-            <i class="fas fa-paper-plane text-xl"></i> Kirim Pesanan Sekarang
-        </button>
+        <div class="mt-5 space-y-3">
+            <button id="btn-submit-tele" disabled onclick="submitOrder('telegram')" class="w-full bg-gray-400 text-white font-bold py-3 rounded-xl shadow-lg transition duration-300 flex justify-center items-center gap-2 cursor-not-allowed">
+                <i class="fas fa-bolt text-xl"></i> Pesan Otomatis (Langsung Diproses)
+            </button>
+            <button id="btn-submit-wa" disabled onclick="submitOrder('whatsapp')" class="w-full bg-gray-400 text-white font-bold py-3 rounded-xl shadow-lg transition duration-300 flex justify-center items-center gap-2 cursor-not-allowed">
+                <i class="fab fa-whatsapp text-xl"></i> Pesan via Admin (Tanya-tanya)
+            </button>
+        </div>
     </section>
 
     <footer class="mt-12 mb-20 text-center text-xs text-kenangan-dark/60 font-medium">
         <p>Promo by Bintang &copy; 2026</p>
     </footer>
 
-    <!-- Toast Notification Container (BARU ditambahkan) -->
+    <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[110] flex flex-col gap-2 w-[90%] max-w-sm pointer-events-none"></div>
 
     <!-- Fullscreen Thank You Animation -->
@@ -211,7 +216,7 @@
             </div>
             <h2 class="text-3xl font-bold text-white mb-3">Pesanan Dirangkai!</h2>
             
-            <!-- Dinamis Quote / Pantun (BARU ditambahkan) -->
+            <!-- Dinamis Quote / Pantun -->
             <p id="thankyou-quote" class="text-kenangan-light/90 text-sm leading-relaxed italic text-center min-h-[60px]">Terima kasih atas pesananmu.<br>Sistem sedang mengalihkanmu ke WhatsApp...</p>
             
             <!-- Loading Dots -->
@@ -221,7 +226,7 @@
                 <div class="w-3 h-3 bg-kenangan-accent rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
             </div>
             
-            <p class="text-white/40 text-[10px] mt-6 text-center">Pesananmu sudah masuk ke sistem kasir secara otomatis.</p>
+            <p id="thankyou-wa-text" class="text-white/40 text-[10px] mt-6 text-center">Tunggu sebentar, lagi dandanin keranjangmu... (5 Detik)</p>
         </div>
     </div>
 
@@ -256,6 +261,23 @@
                     <span>Simpan ke Keranjang</span>
                     <span id="modal-btn-price">Rp 0</span>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POP-UP PEMBAYARAN KHUSUS TELEGRAM (BARU) -->
+    <div id="payment-popup" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[120] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl transform scale-95 transition-transform duration-300" id="payment-popup-content">
+            <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-check-circle text-4xl"></i>
+            </div>
+            <h3 class="font-bold text-2xl text-kenangan-dark mb-2">Pesanan Masuk!</h3>
+            <p class="text-sm text-gray-600 mb-6 leading-relaxed">Pesanan otomatis Anda sudah berhasil dikirim ke layar kasir admin. <br><br><b class="text-red-500 bg-red-50 px-2 py-1 rounded">Namun pesanan ini BELUM DIBAYAR!</b><br><br>Silakan segera menuju kasir outlet atau konfirmasi admin via WA untuk menyelesaikan pembayaran. Pesanan baru diracik setelah lunas ya! ☕</p>
+            <div class="space-y-3">
+                <a href="https://wa.me/6285959633342?text=Halo%20Admin,%20saya%20sudah%20pesan%20via%20sistem%20web%20otomatis.%20Tolong%20dicek%20pesanannya%20dan%20saya%20mau%20bayar!" target="_blank" class="w-full flex justify-center items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition">
+                    <i class="fab fa-whatsapp text-lg"></i> Konfirmasi ke WA Admin
+                </a>
+                <button onclick="closePaymentPopup()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl shadow-md active:scale-95 transition">Tutup & Langsung ke Kasir</button>
             </div>
         </div>
     </div>
@@ -609,9 +631,14 @@
             showToast(`<b>${itemName}</b><br>Berhasil masuk ke keranjang!`);
 
             // Minimalist feedback di tombol bawah
-            const btn = document.querySelector('#btn-submit');
-            btn.innerHTML = '<i class="fas fa-check"></i> Ditambahkan';
-            setTimeout(() => btn.innerHTML = '<i class="fas fa-paper-plane text-xl"></i> Kirim Pesanan Sekarang', 1000);
+            const btnTele = document.querySelector('#btn-submit-tele');
+            const btnWa = document.querySelector('#btn-submit-wa');
+            btnTele.innerHTML = '<i class="fas fa-check"></i> Ditambahkan';
+            btnWa.innerHTML = '<i class="fas fa-check"></i> Ditambahkan';
+            setTimeout(() => {
+                btnTele.innerHTML = '<i class="fas fa-bolt text-xl"></i> Pesan Otomatis (Langsung Diproses)';
+                btnWa.innerHTML = '<i class="fab fa-whatsapp text-xl"></i> Pesan via Admin (Tanya-tanya)';
+            }, 1000);
         }
 
         function playFlyToCartAnimation() {
@@ -723,7 +750,8 @@
             const name = document.getElementById('cust-name').value.trim();
             const city = document.getElementById('cust-city').value;
             const branch = document.getElementById('cust-branch').value;
-            const btn = document.getElementById('btn-submit');
+            const btnTele = document.getElementById('btn-submit-tele');
+            const btnWa = document.getElementById('btn-submit-wa');
 
             // Calculate Totals
             let subtotal = cart.reduce((sum, c) => sum + c.item.new, 0);
@@ -748,17 +776,25 @@
 
             // PRD 6.4 Validasi Tombol
             if (cart.length > 0 && name.length >= 2 && city !== "" && branch !== "") {
-                btn.disabled = false;
-                btn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                btn.classList.add('bg-green-500', 'hover:bg-green-600', 'active:scale-95');
+                btnTele.disabled = false;
+                btnTele.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                btnTele.classList.add('bg-kenangan-primary', 'hover:bg-kenangan-dark', 'active:scale-95');
+                
+                btnWa.disabled = false;
+                btnWa.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                btnWa.classList.add('bg-green-500', 'hover:bg-green-600', 'active:scale-95');
             } else {
-                btn.disabled = true;
-                btn.classList.add('bg-gray-400', 'cursor-not-allowed');
-                btn.classList.remove('bg-green-500', 'hover:bg-green-600', 'active:scale-95');
+                btnTele.disabled = true;
+                btnTele.classList.add('bg-gray-400', 'cursor-not-allowed');
+                btnTele.classList.remove('bg-kenangan-primary', 'hover:bg-kenangan-dark', 'active:scale-95');
+                
+                btnWa.disabled = true;
+                btnWa.classList.add('bg-gray-400', 'cursor-not-allowed');
+                btnWa.classList.remove('bg-green-500', 'hover:bg-green-600', 'active:scale-95');
             }
         }
 
-        function submitOrder() {
+        function submitOrder(method) {
             const name = document.getElementById('cust-name').value.trim();
             const city = document.getElementById('cust-city').value;
             const branch = document.getElementById('cust-branch').value;
@@ -794,69 +830,119 @@ Mohon dibantu proses order ya, terima kasih!`;
 
             const encodedMessage = encodeURIComponent(message);
             
-            // --- TELEGRAM INTEGRATION ---
-            // MASUKKAN TOKEN DAN CHAT ID KAMU DI BAWAH INI:
-            const botToken = "8765196047:AAGSnN7VoGnXxQK5rl5459ifGqBVE3EKsWo"; 
-            const chatId = "6731058601";
-            const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodedMessage}`;
-            
-            // KOLEKSI PANTUN (BARU - TANPA KATA WA)
+            if (method === 'telegram') {
+                const botToken = "8765196047:AAGSnN7VoGnXxQK5rl5459ifGqBVE3EKsWo";
+                const chatId = "6731058601";
+                const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodedMessage}`;
+                
+                const btn = document.getElementById('btn-submit-tele');
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i> Sedang Memproses...';
+                btn.disabled = true;
+                document.getElementById('btn-submit-wa').disabled = true;
+
+                fetch(telegramUrl)
+                    .then(response => {
+                        if(response.ok) {
+                            showThankYouScreen(false);
+                        } else {
+                            showToast("Gagal mengirim ke kasir. Silakan coba via WA.");
+                        }
+                    })
+                    .catch(error => {
+                        showToast("Terjadi kesalahan koneksi. Silakan coba via WA.");
+                    })
+                    .finally(() => {
+                        btn.innerHTML = '<i class="fas fa-bolt text-xl"></i> Pesan Otomatis (Langsung Diproses)';
+                        validateForm();
+                    });
+                    
+            } else if (method === 'whatsapp') {
+                const waNumber = "6285959633342";
+                const waUrl = `https://wa.me/${waNumber}?text=${encodedMessage}`;
+                showThankYouScreen(true, waUrl);
+            }
+        }
+        
+        function showThankYouScreen(redirectToWa, waUrl = '') {
+            // KOLEKSI PANTUN (BARU)
             const quotes = [
                 "Beli kopi buat begadang,<br>Jangan lupa bayar pakai uang.<br>Terima kasih sudah datang,<br>Pesananmu segera direkap sayang! ☕",
-                "Jalan-jalan ke Cileunyi,<br>Jangan lupa mampir ngopi.<br>Pesananmu diproses di sini,<br>Siap diracik kasir ntar lagi! ✨",
-                "Mantan boleh menjauh, tapi pesanan Kopi Kenangan bakal makin mendekat!<br>Sistem meneruskan ke kasir otomatis...",
+                "Jalan-jalan ke Cileunyi,<br>Jangan lupa mampir ngopi.<br>Pesananmu diproses di sini,<br>Siap dikirim ntar lagi! ✨",
+                "Mantan boleh menjauh, tapi pesanan Kopi Kenangan bakal makin mendekat!",
                 "Pergi ke pasar beli melati,<br>Pulangnya beli Kenangan Mantan.<br>Pesananmu sudah kami dapati,<br>Siap meluncur ke tujuan! 🚀",
-                "Biar diread doang sama gebetan, yang penting pesanan Kopi Kenangan tetep jalan.<br>Silakan datang ambil di outlet ya!"
+                "Biar diread doang sama gebetan, yang penting pesanan Kopi Kenangan tetep jalan."
             ];
 
-            const btn = document.getElementById('btn-submit');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i> Mengirim...';
-            btn.disabled = true;
+            const thankyouScreen = document.getElementById('thankyou-screen');
+            const thankyouContent = document.getElementById('thankyou-content');
+            const quoteEl = document.getElementById('thankyou-quote');
+            const waTextEl = document.getElementById('thankyou-wa-text');
+            
+            // Acak pantun/quote
+            quoteEl.innerHTML = quotes[Math.floor(Math.random() * quotes.length)];
+            
+            if (redirectToWa) {
+                waTextEl.innerHTML = "Tunggu sebentar, mengalihkanmu ke WhatsApp... (5 Detik)";
+            } else {
+                waTextEl.innerHTML = "Sistem telah meneruskan pesanan otomatis ke Outlet. Layar akan tertutup... (5 Detik)";
+            }
+            
+            // Tampilkan Layar Transisi
+            thankyouScreen.classList.remove('hidden');
+            setTimeout(() => thankyouScreen.classList.remove('opacity-0'), 10);
+            
+            setTimeout(() => {
+                thankyouContent.classList.remove('scale-75', 'opacity-0');
+                thankyouContent.classList.add('scale-100', 'opacity-100');
+            }, 100);
 
-            fetch(telegramUrl)
-                .then(response => {
-                    if(response.ok) {
-                        const thankyouScreen = document.getElementById('thankyou-screen');
-                        const thankyouContent = document.getElementById('thankyou-content');
-                        const quoteEl = document.getElementById('thankyou-quote');
-                        
-                        quoteEl.innerHTML = quotes[Math.floor(Math.random() * quotes.length)];
-                        
-                        thankyouScreen.classList.remove('hidden');
-                        setTimeout(() => thankyouScreen.classList.remove('opacity-0'), 10);
-                        
-                        setTimeout(() => {
-                            thankyouContent.classList.remove('scale-75', 'opacity-0');
-                            thankyouContent.classList.add('scale-100', 'opacity-100');
-                        }, 100);
+            // Tunggu 5 DETIK
+            setTimeout(() => {
+                if (redirectToWa) {
+                    window.open(waUrl, '_blank');
+                } else {
+                    // Reset Keranjang Jika via Telegram (Sukses)
+                    cart = [];
+                    updateCartUI();
+                    document.getElementById('cust-name').value = '';
+                    document.getElementById('cust-notes').value = '';
+                    document.getElementById('cust-city').selectedIndex = 0;
+                    handleCityChange();
+                    
+                    // MUNCULKAN POPUP PEMBAYARAN KHUSUS TELEGRAM
+                    setTimeout(showPaymentPopup, 600); 
+                }
+                
+                // Sembunyikan layar transisi pelan-pelan
+                setTimeout(() => {
+                    thankyouScreen.classList.add('opacity-0');
+                    thankyouContent.classList.remove('scale-100', 'opacity-100');
+                    thankyouContent.classList.add('scale-75', 'opacity-0');
+                    setTimeout(() => thankyouScreen.classList.add('hidden'), 500);
+                }, 1000);
+            }, 5000); 
+        }
+        
+        function showPaymentPopup() {
+            const popup = document.getElementById('payment-popup');
+            const popupContent = document.getElementById('payment-popup-content');
+            popup.classList.remove('hidden');
+            setTimeout(() => {
+                popup.classList.remove('opacity-0');
+                popupContent.classList.remove('scale-95');
+                popupContent.classList.add('scale-100');
+            }, 10);
+        }
 
-                        // Tunggu 5 DETIK, lalu tutup layar dan reset keranjang (Tanpa buka WA)
-                        setTimeout(() => {
-                            thankyouScreen.classList.add('opacity-0');
-                            thankyouContent.classList.remove('scale-100', 'opacity-100');
-                            thankyouContent.classList.add('scale-75', 'opacity-0');
-                            setTimeout(() => {
-                                thankyouScreen.classList.add('hidden');
-                                // Reset keranjang setelah berhasil
-                                cart = [];
-                                updateCartUI();
-                                document.getElementById('cust-name').value = '';
-                                document.getElementById('cust-notes').value = '';
-                                document.getElementById('cust-city').selectedIndex = 0;
-                                handleCityChange();
-                            }, 500);
-                        }, 5000); 
-                    } else {
-                        showToast("Gagal mengirim pesanan. Periksa Chat ID atau Token.");
-                    }
-                })
-                .catch(error => {
-                    showToast("Terjadi kesalahan koneksi internet.");
-                })
-                .finally(() => {
-                    btn.innerHTML = '<i class="fas fa-paper-plane text-xl"></i> Kirim Pesanan Sekarang';
-                    validateForm();
-                });
+        function closePaymentPopup() {
+            const popup = document.getElementById('payment-popup');
+            const popupContent = document.getElementById('payment-popup-content');
+            popup.classList.add('opacity-0');
+            popupContent.classList.remove('scale-100');
+            popupContent.classList.add('scale-95');
+            setTimeout(() => {
+                popup.classList.add('hidden');
+            }, 300);
         }
 
         function scrollToCart() {
