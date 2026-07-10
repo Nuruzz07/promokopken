@@ -200,14 +200,19 @@
         <p>Promo by Bintang &copy; 2026</p>
     </footer>
 
+    <!-- Toast Notification Container (BARU ditambahkan) -->
+    <div id="toast-container" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[110] flex flex-col gap-2 w-[90%] max-w-sm pointer-events-none"></div>
+
     <!-- Fullscreen Thank You Animation -->
     <div id="thankyou-screen" class="fixed inset-0 z-[100] glass-dark flex flex-col items-center justify-center hidden opacity-0 transition-opacity duration-500">
-        <div class="text-center scale-75 opacity-0 transition-all duration-700 delay-100 flex flex-col items-center" id="thankyou-content">
+        <div class="text-center scale-75 opacity-0 transition-all duration-700 delay-100 flex flex-col items-center w-full px-6" id="thankyou-content">
             <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(232,163,89,0.4)]">
                 <i class="fas fa-coffee text-5xl text-kenangan-accent animate-bounce"></i>
             </div>
             <h2 class="text-3xl font-bold text-white mb-3">Pesanan Dirangkai!</h2>
-            <p class="text-kenangan-light/80 text-sm leading-relaxed">Terima kasih atas pesananmu.<br>Sistem sedang mengalihkanmu ke WhatsApp...</p>
+            
+            <!-- Dinamis Quote / Pantun (BARU ditambahkan) -->
+            <p id="thankyou-quote" class="text-kenangan-light/90 text-sm leading-relaxed italic text-center min-h-[60px]">Terima kasih atas pesananmu.<br>Sistem sedang mengalihkanmu ke WhatsApp...</p>
             
             <!-- Loading Dots -->
             <div class="flex gap-2 mt-6">
@@ -215,6 +220,8 @@
                 <div class="w-3 h-3 bg-kenangan-accent rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
                 <div class="w-3 h-3 bg-kenangan-accent rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
             </div>
+            
+            <p class="text-white/40 text-[10px] mt-6 text-center">Tunggu sebentar, lagi dandanin keranjangmu... (5 Detik)</p>
         </div>
     </div>
 
@@ -257,12 +264,12 @@
         // Data Kota dan Outlet (Cascading Rule)
         const cityData = {
             "Jakarta": ["Senayan City Mall", "Grand Indonesia", "Central Park", "Kuningan City", "Kemang Raya (Non-Mall)"],
-            "Bandung": ["Paris Van Java", "Cihampelas Walk", "Paskal 23 Mall", "Dipatiukur (Non-Mall)", "Buah Batu (Non-Mall)"],
+            "Bandung": ["Paris Van Java", "Cihampelas Walk", "Paskal 23 Mall", "Dipatiukur (Non-Mall)", "Cileunyi"],
             "Tangerang": ["AEON Mall BSD", "Supermal Karawaci", "Bintaro Xchange", "Gading Serpong (Non-Mall)"],
             "Bogor": ["Botani Square", "Cibinong City Mall", "Pajajaran (Non-Mall)"],
             "Yogyakarta": ["Pakuwon Mall Jogja", "Ambarrukmo Plaza", "Kaliurang (Non-Mall)"]
         };
-        const otherCities = ["Sidoarjo", "Semarang", "Sumedang", "Solo", "Karawang", "Lampung", "Makassar", "Palembang", "Bekasi", "Surabaya", "Gresik", "Depok", "Cirebon", "Banten", "Batu", "Purwakarta", "Cilegon", "Malang", "Medan"];
+        const otherCities = ["Sidoarjo", "Semarang", "Sumedang", "Solo", "Karawang", "Lampung", "Makassar", "Palembang", "Bekasi", "Surabaya", "Gresik", "Depok", "Cirebon", "Banten", "Batu", "Purwakarta", "Malang", "Medan"];
 
         // Data Menu Berdasarkan PRD
         const menuData = [
@@ -531,8 +538,34 @@
             currentModalItem = null;
         }
 
+        // FUNGSI BARU: Toast Pop-up Notification
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-kenangan-dark/95 backdrop-blur-md text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transform transition-all duration-500 translate-y-[-30px] opacity-0 border border-kenangan-accent/30';
+            toast.innerHTML = `<div class="bg-green-500/20 text-green-400 p-2 rounded-full flex-shrink-0 w-8 h-8 flex items-center justify-center"><i class="fas fa-check"></i></div> <p class="text-sm font-medium leading-tight">${message}</p>`;
+            
+            container.appendChild(toast);
+            
+            // Animasi masuk
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-[-30px]', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            });
+
+            // Animasi keluar setelah 3 detik
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-[-30px]', 'opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
         function addToCartFromModal() {
             if (!currentModalItem) return;
+
+            // Simpan nama item sebelum closeModal menghapusnya (Mencegah Error TypeError)
+            const itemName = currentModalItem.name;
 
             let details = [];
             if (currentModalItem.type === 'bundling') {
@@ -566,14 +599,16 @@
                 note: note
             });
 
+            // Tutup modal yang mengubah currentModalItem menjadi null
             closeModal();
             updateCartUI();
             validateForm();
 
-            // Panggil Animasi Keren
+            // Panggil Animasi Keren & Toast menggunakan variabel itemName yang sudah disimpan
             playFlyToCartAnimation();
+            showToast(`<b>${itemName}</b><br>Berhasil masuk ke keranjang!`);
 
-            // Minimalist feedback
+            // Minimalist feedback di tombol bawah
             const btn = document.querySelector('#btn-submit');
             btn.innerHTML = '<i class="fas fa-check"></i> Ditambahkan';
             setTimeout(() => btn.innerHTML = '<i class="fab fa-whatsapp text-xl"></i> Kirim Pesanan Ke WA', 1000);
@@ -732,7 +767,6 @@
             let itemsText = '';
             let subtotal = 0;
 
-            // Grouping cart items for cleaner list is possible, but PRD format asks for per item listed
             cart.forEach((c, i) => {
                 subtotal += c.item.new;
                 itemsText += `${i+1}. 1x ${c.item.name}\n`;
@@ -744,7 +778,6 @@
             const surcharge = checkMallSurcharge();
             const total = subtotal + surcharge;
 
-            // PRD 6.5 Struktur Pesanan Terkirim
             const message = `Nama Pemesan: ${name}
 Kota: ${city}
 Outlet Pengambilan: ${branch}
@@ -763,9 +796,21 @@ Mohon dibantu proses order ya, terima kasih!`;
             const waNumber = "6285959633342";
             const waUrl = `https://wa.me/${waNumber}?text=${encodedMessage}`;
             
-            // Animasi Fullscreen Terima Kasih sebelum pindah ke WA
+            // KOLEKSI PANTUN (BARU)
+            const quotes = [
+                "Beli kopi buat begadang,<br>Jangan lupa bayar pakai uang.<br>Terima kasih sudah datang,<br>Pesananmu segera direkap sayang! ☕",
+                "Jalan-jalan ke Cileunyi,<br>Jangan lupa mampir ngopi.<br>Pesananmu diproses di sini,<br>Siap dikirim ke WA ntar lagi! ✨",
+                "Mantan boleh menjauh, tapi pesanan Kopi Kenangan bakal makin mendekat!<br>Sistem beralih ke WhatsApp...",
+                "Pergi ke pasar beli melati,<br>Pulangnya beli Kenangan Mantan.<br>Pesananmu sudah kami dapati,<br>Siap meluncur ke tujuan! 🚀",
+                "Biar diread doang sama gebetan, yang penting pesanan Kopi Kenangan tetep jalan.<br>Siapin chat WA kamu ya!"
+            ];
+
             const thankyouScreen = document.getElementById('thankyou-screen');
             const thankyouContent = document.getElementById('thankyou-content');
+            const quoteEl = document.getElementById('thankyou-quote');
+            
+            // Acak pantun/quote
+            quoteEl.innerHTML = quotes[Math.floor(Math.random() * quotes.length)];
             
             // Tampilkan Layar Transisi
             thankyouScreen.classList.remove('hidden');
@@ -776,7 +821,7 @@ Mohon dibantu proses order ya, terima kasih!`;
                 thankyouContent.classList.add('scale-100', 'opacity-100');
             }, 100);
 
-            // Tunggu 2.5 detik lalu buka WA
+            // Tunggu 5 DETIK lalu buka WA
             setTimeout(() => {
                 window.open(waUrl, '_blank');
                 
@@ -787,7 +832,7 @@ Mohon dibantu proses order ya, terima kasih!`;
                     thankyouContent.classList.add('scale-75', 'opacity-0');
                     setTimeout(() => thankyouScreen.classList.add('hidden'), 500);
                 }, 1000);
-            }, 2500);
+            }, 5000); // <- Waktu sudah disesuaikan jadi 5 detik
         }
 
         function scrollToCart() {
