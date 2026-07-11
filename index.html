@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Promo Eksklusif Kopi Kenangan</title>
+    <title>Bintang Store - Portal Hiburan & F&B</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -14,7 +14,9 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        kenangan: { dark: '#2C1A0D', primary: '#A05C3A', accent: '#E8A359', light: '#F9F1E7' }
+                        kenangan: { dark: '#2C1A0D', primary: '#A05C3A', accent: '#E8A359', light: '#F9F1E7' },
+                        netflix: { dark: '#141414', primary: '#E50914', light: '#F5F5F1' },
+                        portal: { dark: '#0F172A', accent: '#38BDF8' }
                     }
                 }
             }
@@ -23,21 +25,23 @@
 
     <style>
         body {
-            background-color: #F9F1E7;
-            color: #2C1A0D;
+            background-color: #0F172A; /* Default Portal Dark */
+            color: #ffffff;
             overflow-x: hidden;
             position: relative;
+            transition: background-color 0.5s ease;
         }
 
         /* Premium Dynamic Glow Background */
         .bg-glow {
             position: fixed;
             top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(232, 163, 89, 0.15) 0%, rgba(249, 241, 231, 0) 50%),
-                        radial-gradient(circle at 80% 20%, rgba(160, 92, 58, 0.1) 0%, rgba(249, 241, 231, 0) 40%);
+            background: radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 40%);
             animation: pulseGlow 15s infinite alternate linear;
             z-index: -2;
             pointer-events: none;
+            transition: background 0.5s ease;
         }
 
         @keyframes pulseGlow {
@@ -51,14 +55,19 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 32px 0 rgba(160, 92, 58, 0.1);
         }
-        
         .glass-dark {
-            background: rgba(44, 26, 13, 0.85);
+            background: rgba(20, 20, 20, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-portal {
+            background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
 
         /* 3D Ambient Particles */
@@ -86,206 +95,600 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #A05C3A; border-radius: 10px; }
 
-        /* Hide Number Input Arrows */
         input[type="number"]::-webkit-inner-spin-button, 
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
         .modal-enter { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        /* View Transitions */
+        .view-section {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
-<body class="antialiased pb-32">
+<body class="antialiased">
 
     <!-- Background Glows & Particles -->
-    <div class="bg-glow"></div>
+    <div class="bg-glow" id="main-glow"></div>
     <div id="particle-container"></div>
-
-    <header class="glass sticky top-0 z-40 px-4 py-3 flex items-center justify-between transition-all duration-300" id="main-header">
-        <div class="flex items-center gap-3">
-            <img src="https://i.postimg.cc/GpwttdxX/Logo-Kopi-Kenangan-Format-PNG-AI-EPS-CDR-PDF-SVG.png" alt="Logo Kopi Kenangan" class="w-10 h-10 object-contain drop-shadow-sm">
-            <div>
-                <h1 class="font-bold text-kenangan-dark leading-tight text-lg">Promo Kopi Kenangan</h1>
-                <p class="text-xs text-kenangan-primary font-medium">Sistem Bantu Order Praktis</p>
-            </div>
-        </div>
-        <button id="cart-icon-btn" onclick="scrollToCart()" class="relative p-2 text-kenangan-dark transition-all duration-300">
-            <i class="fas fa-shopping-bag text-xl transform transition-transform duration-300" id="cart-icon"></i>
-            <span id="cart-badge" class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center hidden transition-transform duration-300">0</span>
-        </button>
-    </header>
-
-    <nav class="glass sticky top-[64px] z-30 px-4 py-2 mb-4 overflow-x-auto no-scrollbar whitespace-nowrap border-b border-white/50">
-        <div class="flex gap-2">
-            <a href="#cat-bundling" class="px-4 py-1.5 rounded-full bg-white/80 text-kenangan-dark text-sm font-semibold shadow-sm border border-white">Bundling</a>
-            <a href="#cat-coffee" class="px-4 py-1.5 rounded-full bg-white/80 text-kenangan-dark text-sm font-semibold shadow-sm border border-white">Coffee</a>
-            <a href="#cat-noncoffee" class="px-4 py-1.5 rounded-full bg-white/80 text-kenangan-dark text-sm font-semibold shadow-sm border border-white">Non-Coffee</a>
-            <a href="#cat-bakery" class="px-4 py-1.5 rounded-full bg-white/80 text-kenangan-dark text-sm font-semibold shadow-sm border border-white">Bakery</a>
-        </div>
-    </nav>
-
-    <!-- Disclaimer -->
-    <div class="mx-4 mb-6 p-3 bg-kenangan-accent/20 border border-kenangan-accent/30 rounded-xl text-center shadow-sm">
-        <p class="text-xs text-kenangan-dark font-medium"><i class="fas fa-info-circle mr-1 text-kenangan-primary"></i> Untuk melihat foto asli produk promo, silakan langsung menghubungi admin ya!</p>
-    </div>
-
-    <main class="px-4 space-y-8" id="menu-container">
-        <!-- Menu categories will be injected here via JS -->
-    </main>
-
-    <section id="checkout-section" class="mx-4 mt-10 p-5 glass rounded-2xl">
-        <h2 class="text-xl font-bold text-kenangan-dark mb-4 flex items-center gap-2">
-            <i class="fas fa-clipboard-list text-kenangan-primary"></i> Detail Pesanan
-        </h2>
-
-        <!-- Cart Items List -->
-        <div id="cart-items-container" class="space-y-3 mb-6 max-h-60 overflow-y-auto pr-2">
-            <p class="text-sm text-gray-500 italic text-center py-4">Keranjang masih kosong.</p>
-        </div>
-
-        <!-- Form Pemesan -->
-        <div class="space-y-4 border-t border-gray-300/50 pt-4">
-            <div>
-                <label class="block text-xs font-semibold text-kenangan-dark mb-1">Nama Pemesan <span class="text-red-500">*</span></label>
-                <input type="text" id="cust-name" placeholder="Masukkan nama Anda" class="w-full px-3 py-2 rounded-lg bg-white/80 border border-white shadow-inner focus:outline-none focus:ring-2 focus:ring-kenangan-primary text-sm transition" oninput="validateForm()">
-            </div>
-            
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-semibold text-kenangan-dark mb-1">Kota <span class="text-red-500">*</span></label>
-                    <select id="cust-city" class="w-full px-3 py-2 rounded-lg bg-white/80 border border-white shadow-inner focus:outline-none focus:ring-2 focus:ring-kenangan-primary text-sm transition" onchange="handleCityChange()">
-                        <option value="">Pilih Kota...</option>
-                        <!-- Options injected by JS -->
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-kenangan-dark mb-1">Outlet <span class="text-red-500">*</span></label>
-                    <select id="cust-branch" class="w-full px-3 py-2 rounded-lg bg-white/80 border border-white shadow-inner focus:outline-none focus:ring-2 focus:ring-kenangan-primary text-sm transition" onchange="validateForm()" disabled>
-                        <option value="">Pilih Kota Dulu</option>
-                    </select>
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-kenangan-dark mb-1">Catatan Tambahan (Opsional)</label>
-                <input type="text" id="cust-notes" placeholder="Misal: Titip di pos satpam" class="w-full px-3 py-2 rounded-lg bg-white/80 border border-white shadow-inner focus:outline-none focus:ring-2 focus:ring-kenangan-primary text-sm transition">
-            </div>
-        </div>
-
-        <!-- Order Summary & Surcharge -->
-        <div class="mt-6 bg-white/60 p-4 rounded-xl shadow-sm border border-white/50">
-            <div class="flex justify-between text-sm mb-2 text-gray-700">
-                <span>Subtotal Menu:</span>
-                <span id="summary-subtotal">Rp 0</span>
-            </div>
-            <div id="mall-surcharge-row" class="flex justify-between text-sm mb-2 text-kenangan-primary font-medium hidden">
-                <span>Biaya Outlet (Mall/Besar):</span>
-                <span>+ Rp 3.000</span>
-            </div>
-            <hr class="my-2 border-gray-300">
-            <div class="flex justify-between font-bold text-lg text-kenangan-dark">
-                <span>Total Final:</span>
-                <span id="summary-total">Rp 0</span>
-            </div>
-            <p class="text-[10px] text-gray-500 mt-2 leading-tight text-center bg-kenangan-accent/10 p-2 rounded">
-                *Harga yang Anda bayar adalah harga total final. Tidak ada biaya tambahan apa pun lagi saat Anda mengambil pesanan di outlet.
-            </p>
-        </div>
-
-        <!-- Tombol Dual Opsi (Telegram Otomatis atau Tanya WA) -->
-        <div class="mt-5 space-y-3">
-            <button id="btn-submit-tele" disabled onclick="submitOrder('telegram')" class="w-full bg-gray-400 text-white font-bold py-3 rounded-xl shadow-lg transition duration-300 flex justify-center items-center gap-2 cursor-not-allowed">
-                <i class="fas fa-bolt text-xl"></i> Pesan Otomatis (Langsung Diproses)
-            </button>
-            <button id="btn-submit-wa" disabled onclick="submitOrder('whatsapp')" class="w-full bg-gray-400 text-white font-bold py-3 rounded-xl shadow-lg transition duration-300 flex justify-center items-center gap-2 cursor-not-allowed">
-                <i class="fab fa-whatsapp text-xl"></i> Pesan via Admin (Tanya-tanya)
-            </button>
-        </div>
-    </section>
-
-    <footer class="mt-12 mb-20 text-center text-xs text-kenangan-dark/60 font-medium">
-        <p>Promo by Bintang &copy; 2026</p>
-    </footer>
 
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[110] flex flex-col gap-2 w-[90%] max-w-sm pointer-events-none"></div>
 
-    <!-- Fullscreen Thank You Animation -->
-    <div id="thankyou-screen" class="fixed inset-0 z-[100] glass-dark flex flex-col items-center justify-center hidden opacity-0 transition-opacity duration-500">
-        <div class="text-center scale-75 opacity-0 transition-all duration-700 delay-100 flex flex-col items-center w-full px-6" id="thankyou-content">
-            <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(232,163,89,0.4)]">
-                <i class="fas fa-coffee text-5xl text-kenangan-accent animate-bounce"></i>
+    <!-- ========================================== -->
+    <!-- VIEW 1: PORTAL BINTANG STORE (HUB UTAMA)   -->
+    <!-- ========================================== -->
+    <div id="view-portal" class="view-section min-h-screen flex flex-col items-center justify-center px-6 py-10">
+        <div class="text-center mb-10">
+            <div class="w-24 h-24 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-3xl mx-auto flex items-center justify-center shadow-[0_0_40px_rgba(56,189,248,0.4)] mb-6 transform rotate-12 hover:rotate-0 transition duration-500">
+                <i class="fas fa-star text-white text-5xl transform -rotate-12"></i>
             </div>
-            <h2 class="text-3xl font-bold text-white mb-3">Pesanan Dirangkai!</h2>
-            
-            <!-- Dinamis Quote / Pantun -->
-            <p id="thankyou-quote" class="text-kenangan-light/90 text-sm leading-relaxed italic text-center min-h-[60px]">Terima kasih atas pesananmu.<br>Sistem sedang mengalihkanmu ke WhatsApp...</p>
-            
-            <!-- Loading Dots -->
-            <div class="flex gap-2 mt-6">
-                <div class="w-3 h-3 bg-kenangan-accent rounded-full animate-bounce" style="animation-delay: 0s;"></div>
-                <div class="w-3 h-3 bg-kenangan-accent rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
-                <div class="w-3 h-3 bg-kenangan-accent rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
-            </div>
-            
-            <p id="thankyou-wa-text" class="text-white/40 text-[10px] mt-6 text-center">Tunggu sebentar, lagi dandanin keranjangmu... (5 Detik)</p>
+            <h1 class="text-4xl font-bold text-white mb-3 tracking-tight">Bintang Store</h1>
+            <p class="text-gray-300 text-sm max-w-xs mx-auto leading-relaxed">Satu portal untuk semua kebutuhan healing-mu. Ngopi jalan, maraton drakor aman!</p>
         </div>
+
+        <div class="w-full max-w-sm space-y-5">
+            <!-- Kopken Button -->
+            <button onclick="switchView('kopken')" class="w-full relative group overflow-hidden rounded-3xl glass-portal p-6 text-left transition duration-300 hover:scale-105 active:scale-95 border-l-4 border-l-kenangan-accent">
+                <div class="absolute -right-10 -top-10 w-32 h-32 bg-kenangan-primary/20 rounded-full blur-2xl group-hover:bg-kenangan-primary/40 transition duration-500"></div>
+                <div class="flex items-center gap-4 relative z-10">
+                    <div class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <img src="https://i.postimg.cc/GpwttdxX/Logo-Kopi-Kenangan-Format-PNG-AI-EPS-CDR-PDF-SVG.png" alt="Kopi Kenangan" class="w-8 h-8 object-contain">
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white mb-1">Kopi Kenangan</h2>
+                        <p class="text-xs text-gray-400">Pesan minuman & roti promo</p>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-500 ml-auto group-hover:text-white transition"></i>
+                </div>
+            </button>
+
+            <!-- Netflix Button -->
+            <button onclick="switchView('netflix')" class="w-full relative group overflow-hidden rounded-3xl glass-portal p-6 text-left transition duration-300 hover:scale-105 active:scale-95 border-l-4 border-l-netflix-primary">
+                <div class="absolute -right-10 -top-10 w-32 h-32 bg-netflix-primary/20 rounded-full blur-2xl group-hover:bg-netflix-primary/40 transition duration-500"></div>
+                <div class="flex items-center gap-4 relative z-10">
+                    <div class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-play text-netflix-primary text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white mb-1">Netflix Premium</h2>
+                        <p class="text-xs text-gray-400">Sewa akun no limit, garansi full</p>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-500 ml-auto group-hover:text-white transition"></i>
+                </div>
+            </button>
+        </div>
+        
+        <p class="mt-auto pt-10 text-[10px] text-gray-500 font-medium tracking-widest uppercase">© 2026 Bintang Store</p>
     </div>
 
-    <!-- Modal Kustomisasi Menu -->
-    <div id="modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300" onclick="closeModal(event)">
-        <div id="modal-content" class="absolute bottom-0 left-0 w-full bg-white rounded-t-3xl shadow-2xl modal-enter max-h-[85vh] flex flex-col" onclick="event.stopPropagation()">
-            <!-- Handle indicator -->
-            <div class="w-full flex justify-center pt-3 pb-1" onclick="closeModal(event)">
-                <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
-            </div>
-            
-            <div class="px-5 pb-3 flex justify-between items-start border-b border-gray-100 shrink-0">
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: KOPI KENANGAN (SISTEM LAMA)        -->
+    <!-- ========================================== -->
+    <div id="view-kopken" class="view-section hidden text-kenangan-dark pb-32">
+        <header class="glass sticky top-0 z-40 px-4 py-3 flex items-center justify-between transition-all duration-300 shadow-sm" id="main-header">
+            <div class="flex items-center gap-3">
+                <button onclick="switchView('portal')" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/50 text-kenangan-dark hover:bg-white transition">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <img src="https://i.postimg.cc/GpwttdxX/Logo-Kopi-Kenangan-Format-PNG-AI-EPS-CDR-PDF-SVG.png" alt="Logo Kopi Kenangan" class="w-9 h-9 object-contain drop-shadow-sm">
                 <div>
-                    <h3 id="modal-title" class="font-bold text-lg text-kenangan-dark">Nama Menu</h3>
-                    <p id="modal-price" class="text-kenangan-primary font-semibold">Rp 0</p>
+                    <h1 class="font-bold text-kenangan-dark leading-tight text-md">Promo Kopi Kenangan</h1>
                 </div>
-                <button onclick="closeModal(event)" class="w-8 h-8 bg-gray-100 rounded-full flex justify-center items-center text-gray-500">
-                    <i class="fas fa-times"></i>
-                </button>
+            </div>
+            <button id="cart-icon-btn" onclick="scrollToCart()" class="relative p-2 text-kenangan-dark transition-all duration-300">
+                <i class="fas fa-shopping-bag text-xl transform transition-transform duration-300" id="cart-icon"></i>
+                <span id="cart-badge" class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center hidden transition-transform duration-300">0</span>
+            </button>
+        </header>
+
+        <nav class="glass sticky top-[60px] z-30 px-4 py-2 mb-4 overflow-x-auto no-scrollbar whitespace-nowrap border-b border-white/50">
+            <div class="flex gap-2">
+                <a href="#cat-bundling" class="px-4 py-1.5 rounded-full bg-white/80 text-kenangan-dark text-sm font-semibold shadow-sm border border-white">Bundling</a>
+                <a href="#cat-coffee" class="px-4 py-1.5 rounded-full bg-white/80 text-kenangan-dark text-sm font-semibold shadow-sm border border-white">Coffee</a>
+                <a href="#cat-noncoffee" class="px-4 py-1.5 rounded-full bg-white/80 text-kenangan-dark text-sm font-semibold shadow-sm border border-white">Non-Coffee</a>
+                <a href="#cat-bakery" class="px-4 py-1.5 rounded-full bg-white/80 text-kenangan-dark text-sm font-semibold shadow-sm border border-white">Bakery</a>
+            </div>
+        </nav>
+
+        <div class="mx-4 mb-6 p-3 bg-kenangan-accent/20 border border-kenangan-accent/30 rounded-xl text-center shadow-sm">
+            <p class="text-xs text-kenangan-dark font-medium"><i class="fas fa-info-circle mr-1 text-kenangan-primary"></i> Untuk melihat foto asli produk promo, silakan langsung menghubungi admin ya!</p>
+        </div>
+
+        <main class="px-4 space-y-8" id="menu-container">
+            <!-- Menu categories injected via JS -->
+        </main>
+
+        <section id="checkout-section" class="mx-4 mt-10 p-5 glass rounded-2xl">
+            <h2 class="text-xl font-bold text-kenangan-dark mb-4 flex items-center gap-2">
+                <i class="fas fa-clipboard-list text-kenangan-primary"></i> Detail Pesanan
+            </h2>
+
+            <div id="cart-items-container" class="space-y-3 mb-6 max-h-60 overflow-y-auto pr-2">
+                <p class="text-sm text-gray-500 italic text-center py-4">Keranjang masih kosong.</p>
             </div>
 
-            <!-- Scrollable Options Area -->
-            <div id="modal-options-container" class="px-5 py-4 overflow-y-auto flex-grow space-y-4">
-                <!-- Injected dynamically -->
+            <div class="space-y-4 border-t border-gray-300/50 pt-4">
+                <div>
+                    <label class="block text-xs font-semibold text-kenangan-dark mb-1">Nama Pemesan <span class="text-red-500">*</span></label>
+                    <input type="text" id="cust-name" placeholder="Masukkan nama Anda" class="w-full px-3 py-2 rounded-lg bg-white/80 border border-white shadow-inner focus:outline-none focus:ring-2 focus:ring-kenangan-primary text-sm transition text-kenangan-dark" oninput="validateKopkenForm()">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-kenangan-dark mb-1">Kota <span class="text-red-500">*</span></label>
+                        <select id="cust-city" class="w-full px-3 py-2 rounded-lg bg-white/80 border border-white shadow-inner focus:outline-none focus:ring-2 focus:ring-kenangan-primary text-sm transition text-kenangan-dark" onchange="handleCityChange()">
+                            <option value="">Pilih Kota...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-kenangan-dark mb-1">Outlet <span class="text-red-500">*</span></label>
+                        <select id="cust-branch" class="w-full px-3 py-2 rounded-lg bg-white/80 border border-white shadow-inner focus:outline-none focus:ring-2 focus:ring-kenangan-primary text-sm transition text-kenangan-dark" onchange="validateKopkenForm()" disabled>
+                            <option value="">Pilih Kota Dulu</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-kenangan-dark mb-1">Catatan Tambahan (Opsional)</label>
+                    <input type="text" id="cust-notes" placeholder="Misal: Titip di pos satpam" class="w-full px-3 py-2 rounded-lg bg-white/80 border border-white shadow-inner focus:outline-none focus:ring-2 focus:ring-kenangan-primary text-sm transition text-kenangan-dark">
+                </div>
             </div>
 
-            <!-- Sticky Footer inside Modal -->
-            <div class="p-4 border-t border-gray-100 bg-white shrink-0 pb-safe">
-                <div class="bg-blue-50 text-blue-800 text-[10px] p-2 rounded mb-3 leading-tight border border-blue-100">
-                    Opsi ukuran/tambahan ini dibuat agar barista tahu racikan yang Anda inginkan. Harga di web tetap flat, penyesuaian biaya asli mengikuti aplikasi kasir outlet resmi Kopi Kenangan.
+            <div class="mt-6 bg-white/60 p-4 rounded-xl shadow-sm border border-white/50">
+                <div class="flex justify-between text-sm mb-2 text-gray-700">
+                    <span>Subtotal Menu:</span>
+                    <span id="summary-subtotal">Rp 0</span>
                 </div>
-                <button onclick="addToCartFromModal()" class="w-full bg-kenangan-dark text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition flex justify-between px-4">
-                    <span>Simpan ke Keranjang</span>
-                    <span id="modal-btn-price">Rp 0</span>
+                <div id="mall-surcharge-row" class="flex justify-between text-sm mb-2 text-kenangan-primary font-medium hidden">
+                    <span>Biaya Outlet (Mall):</span>
+                    <span>+ Rp 3.000</span>
+                </div>
+                <hr class="my-2 border-gray-300">
+                <div class="flex justify-between font-bold text-lg text-kenangan-dark">
+                    <span>Total Final:</span>
+                    <span id="summary-total">Rp 0</span>
+                </div>
+                <p class="text-[10px] text-gray-500 mt-2 leading-tight text-center bg-kenangan-accent/10 p-2 rounded">
+                    *Harga pas, tidak ada biaya tambahan lagi di outlet.
+                </p>
+            </div>
+
+            <div class="mt-5 space-y-3">
+                <button id="btn-submit-tele-kopken" disabled onclick="submitOrderKopken('telegram')" class="w-full bg-gray-400 text-white font-bold py-3 rounded-xl shadow-lg transition duration-300 flex justify-center items-center gap-2 cursor-not-allowed">
+                    <i class="fas fa-bolt text-xl"></i> Pesan Otomatis (Langsung Diproses)
                 </button>
+                <button id="btn-submit-wa-kopken" disabled onclick="submitOrderKopken('whatsapp')" class="w-full bg-gray-400 text-white font-bold py-3 rounded-xl shadow-lg transition duration-300 flex justify-center items-center gap-2 cursor-not-allowed">
+                    <i class="fab fa-whatsapp text-xl"></i> Pesan via Admin (Tanya-tanya)
+                </button>
+            </div>
+        </section>
+
+        <!-- KOPKEN Modal Overlay -->
+        <div id="modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300" onclick="closeModal(event)">
+            <div id="modal-content" class="absolute bottom-0 left-0 w-full bg-white rounded-t-3xl shadow-2xl modal-enter max-h-[85vh] flex flex-col text-kenangan-dark" onclick="event.stopPropagation()">
+                <div class="w-full flex justify-center pt-3 pb-1" onclick="closeModal(event)">
+                    <div class="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+                </div>
+                
+                <div class="px-5 pb-3 flex justify-between items-start border-b border-gray-100 shrink-0">
+                    <div>
+                        <h3 id="modal-title" class="font-bold text-lg">Nama Menu</h3>
+                        <p id="modal-price" class="text-kenangan-primary font-semibold">Rp 0</p>
+                    </div>
+                    <button onclick="closeModal(event)" class="w-8 h-8 bg-gray-100 rounded-full flex justify-center items-center text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div id="modal-options-container" class="px-5 py-4 overflow-y-auto flex-grow space-y-4"></div>
+
+                <div class="p-4 border-t border-gray-100 bg-white shrink-0 pb-safe">
+                    <button onclick="addToCartFromModal()" class="w-full bg-kenangan-dark text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition flex justify-between px-4">
+                        <span>Simpan ke Keranjang</span>
+                        <span id="modal-btn-price">Rp 0</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- POP-UP PEMBAYARAN KHUSUS TELEGRAM (BARU) -->
+
+    <!-- ========================================== -->
+    <!-- VIEW 3: NETFLIX PREMIUM                    -->
+    <!-- ========================================== -->
+    <div id="view-netflix" class="view-section hidden text-white pb-32">
+        <header class="glass-dark sticky top-0 z-40 px-4 py-3 flex items-center gap-3 shadow-md border-b border-red-500/20">
+            <button onclick="switchView('portal')" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <i class="fas fa-play text-netflix-primary text-2xl drop-shadow-[0_0_8px_rgba(229,9,20,0.8)]"></i>
+            <h1 class="font-bold text-lg tracking-wide">Netflix Premium</h1>
+        </header>
+
+        <main class="px-4 mt-6">
+            <div class="text-center mb-8">
+                <span class="bg-netflix-primary/20 text-netflix-primary border border-netflix-primary/50 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase mb-3 inline-block">Termurah & Bergaransi</span>
+                <h2 class="text-2xl font-bold mb-2">Sewa Akun Private</h2>
+                <p class="text-sm text-gray-400">Mau nonton film dan serial favorit tanpa ribet dan ramah di kantong? Yuk, langsung keep paketnya sekarang!</p>
+            </div>
+
+            <!-- Features -->
+            <div class="grid grid-cols-2 gap-3 mb-8">
+                <div class="glass-dark p-3 rounded-xl border border-white/5">
+                    <i class="fas fa-user-shield text-netflix-primary mb-2 text-xl"></i>
+                    <h3 class="font-bold text-xs mb-1">Private (1 User)</h3>
+                    <p class="text-[10px] text-gray-400">1 Profil 1 User. Gak bakal tabrakan screen.</p>
+                </div>
+                <div class="glass-dark p-3 rounded-xl border border-white/5">
+                    <i class="fas fa-tv text-netflix-primary mb-2 text-xl"></i>
+                    <h3 class="font-bold text-xs mb-1">No Limit & UHD</h3>
+                    <p class="text-[10px] text-gray-400">Bisa di HP, Laptop, atau Smart TV.</p>
+                </div>
+                <div class="glass-dark p-3 rounded-xl border border-white/5">
+                    <i class="fas fa-edit text-netflix-primary mb-2 text-xl"></i>
+                    <h3 class="font-bold text-xs mb-1">Bebas Request</h3>
+                    <p class="text-[10px] text-gray-400">Bebas request nama profil dan PIN sendiri.</p>
+                </div>
+                <div class="glass-dark p-3 rounded-xl border border-white/5">
+                    <i class="fas fa-check-circle text-netflix-primary mb-2 text-xl"></i>
+                    <h3 class="font-bold text-xs mb-1">Full Garansi</h3>
+                    <p class="text-[10px] text-gray-400">Garansi penuh selama masa sewa (S&K berlaku).</p>
+                </div>
+            </div>
+
+            <!-- Pricing Form -->
+            <section class="glass-dark p-5 rounded-2xl border border-white/10 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-netflix-primary/10 rounded-full blur-3xl -z-10"></div>
+                
+                <h3 class="text-lg font-bold mb-4 flex items-center gap-2"><i class="fas fa-shopping-cart text-netflix-primary"></i> Form Pemesanan</h3>
+
+                <div class="space-y-5">
+                    <!-- Package Selection -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-2">Pilih Paket <span class="text-netflix-primary">*</span></label>
+                        <div class="grid grid-cols-1 gap-2">
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="nflx-pkg" value="7 Hari" data-price="10000" class="peer sr-only" onchange="calcNetflixTotal()">
+                                <div class="rounded-xl border border-white/10 bg-white/5 py-3 px-4 flex justify-between items-center transition-all peer-checked:border-netflix-primary peer-checked:bg-netflix-primary/10">
+                                    <span class="font-bold text-sm">Paket 7 Hari</span>
+                                    <span class="text-netflix-primary font-bold">Rp 10.000</span>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="nflx-pkg" value="14 Hari" data-price="15000" class="peer sr-only" onchange="calcNetflixTotal()">
+                                <div class="rounded-xl border border-white/10 bg-white/5 py-3 px-4 flex justify-between items-center transition-all peer-checked:border-netflix-primary peer-checked:bg-netflix-primary/10">
+                                    <span class="font-bold text-sm">Paket 14 Hari</span>
+                                    <span class="text-netflix-primary font-bold">Rp 15.000</span>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="nflx-pkg" value="1 Bulan" data-price="30000" class="peer sr-only" onchange="calcNetflixTotal()">
+                                <div class="rounded-xl border border-white/10 bg-white/5 py-3 px-4 flex justify-between items-center transition-all peer-checked:border-netflix-primary peer-checked:bg-netflix-primary/10">
+                                    <span class="font-bold text-sm">Paket 1 Bulan</span>
+                                    <span class="text-netflix-primary font-bold">Rp 30.000</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Inputs -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Nama Pemesan <span class="text-netflix-primary">*</span></label>
+                        <input type="text" id="nflx-name" placeholder="Nama Anda" class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-netflix-primary focus:outline-none text-sm text-white" oninput="validateNetflixForm()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1">Request Nama Profil <span class="text-netflix-primary">*</span></label>
+                        <input type="text" id="nflx-profile" placeholder="Misal: Bintang (Max 8 Huruf)" class="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 focus:border-netflix-primary focus:outline-none text-sm text-white" maxlength="15" oninput="validateNetflixForm()">
+                    </div>
+
+                    <!-- T&C Box -->
+                    <div class="bg-red-900/20 border border-red-500/30 p-3 rounded-lg mt-4">
+                        <h4 class="text-[10px] font-bold text-red-400 mb-1 uppercase"><i class="fas fa-exclamation-triangle"></i> Syarat & Ketentuan Wajib</h4>
+                        <ul class="text-[10px] text-gray-300 space-y-1 list-disc pl-3">
+                            <li>Dilarang mengubah email dan password akun.</li>
+                            <li>Dilarang mengunci/mengubah PIN profil milik orang lain.</li>
+                            <li>Maksimal login dan streaming hanya di 1 perangkat bersamaan.</li>
+                            <li class="text-red-300 font-semibold">Pelanggaran S&K = Garansi Hangus / Banned.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Total & Submit -->
+                    <div class="pt-4 border-t border-white/10 flex items-center justify-between font-bold text-lg">
+                        <span>Total Bayar:</span>
+                        <span id="nflx-total" class="text-netflix-primary">Rp 0</span>
+                    </div>
+
+                    <div class="space-y-3 mt-4">
+                        <button id="btn-submit-tele-nflx" disabled onclick="submitOrderNetflix('telegram')" class="w-full bg-white/10 text-gray-400 font-bold py-3 rounded-xl transition duration-300 flex justify-center items-center gap-2 cursor-not-allowed border border-transparent">
+                            <i class="fas fa-bolt text-xl"></i> Pesan Otomatis (Proses Cepat)
+                        </button>
+                        <button id="btn-submit-wa-nflx" disabled onclick="submitOrderNetflix('whatsapp')" class="w-full bg-white/10 text-gray-400 font-bold py-3 rounded-xl transition duration-300 flex justify-center items-center gap-2 cursor-not-allowed border border-transparent">
+                            <i class="fab fa-whatsapp text-xl"></i> Pesan via Admin WA
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- GLOBAL ANIMATIONS & POPUPS                 -->
+    <!-- ========================================== -->
+
+    <!-- Fullscreen Thank You Animation -->
+    <div id="thankyou-screen" class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex flex-col items-center justify-center hidden opacity-0 transition-opacity duration-500">
+        <div class="text-center scale-75 opacity-0 transition-all duration-700 delay-100 flex flex-col items-center w-full px-6" id="thankyou-content">
+            <div id="thankyou-icon-wrapper" class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mb-6">
+                <!-- Icon injected dynamically -->
+            </div>
+            <h2 id="thankyou-title" class="text-3xl font-bold text-white mb-3">Memproses...</h2>
+            <p id="thankyou-quote" class="text-gray-300 text-sm leading-relaxed italic text-center min-h-[60px]"></p>
+            
+            <div class="flex gap-2 mt-6">
+                <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0s;"></div>
+                <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                <div class="w-3 h-3 bg-white rounded-full animate-bounce" style="animation-delay: 0.4s;"></div>
+            </div>
+            <p class="text-white/40 text-[10px] mt-6 text-center">Mohon tunggu sebentar... (5 Detik)</p>
+        </div>
+    </div>
+
+    <!-- Payment Popup (Telegram Only) -->
     <div id="payment-popup" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[120] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl transform scale-95 transition-transform duration-300" id="payment-popup-content">
-            <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div class="w-16 h-16 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class="fas fa-check-circle text-4xl"></i>
             </div>
-            <h3 class="font-bold text-2xl text-kenangan-dark mb-2">Pesanan Masuk!</h3>
-            <p class="text-sm text-gray-600 mb-6 leading-relaxed">Pesanan otomatis Anda sudah berhasil dikirim ke layar kasir admin. <br><br><b class="text-red-500 bg-red-50 px-2 py-1 rounded">Namun pesanan ini BELUM DIBAYAR!</b><br><br>Silakan segera menuju kasir outlet atau konfirmasi admin via WA untuk menyelesaikan pembayaran. Pesanan baru diracik setelah lunas ya! ☕</p>
+            <h3 class="font-bold text-2xl text-gray-800 mb-2">Pesanan Diterima!</h3>
+            <p class="text-sm text-gray-600 mb-6 leading-relaxed">Sistem telah meneruskan pesanan otomatis Anda ke layar Admin kami. <br><br><b class="text-red-500 bg-red-50 px-2 py-1 rounded">Namun pesanan ini BELUM DIBAYAR!</b><br><br>Silakan segera konfirmasi admin via WA untuk meminta nomor rekening/QRIS pembayaran. Pesanan baru aktif setelah lunas ya! ✨</p>
             <div class="space-y-3">
-                <a href="https://wa.me/6285959633342?text=Halo%20Admin,%20saya%20sudah%20pesan%20via%20sistem%20web%20otomatis.%20Tolong%20dicek%20pesanannya%20dan%20saya%20mau%20bayar!" target="_blank" class="w-full flex justify-center items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition">
-                    <i class="fab fa-whatsapp text-lg"></i> Konfirmasi ke WA Admin
+                <a href="https://wa.me/6285959633342?text=Halo%20Admin,%20saya%20sudah%20pesan%20via%20sistem%20web.%20Tolong%20dicek%20dan%20minta%20QRIS/Rekening%20pembayarannya%20ya!" target="_blank" class="w-full flex justify-center items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition">
+                    <i class="fab fa-whatsapp text-lg"></i> Konfirmasi Bayar ke WA
                 </a>
-                <button onclick="closePaymentPopup()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl shadow-md active:scale-95 transition">Tutup & Langsung ke Kasir</button>
+                <button onclick="closePaymentPopup()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-xl shadow-md active:scale-95 transition">Tutup Dulu</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Memadatkan 951 Daftar Outlet menjadi format String untuk diparsing cepat (Menghemat Memori)
+        // ==========================================
+        // KONFIGURASI GLOBAL & BOT API
+        // ==========================================
+        const botToken = "8765196047:AAGSnN7VoGnXxQK5rl5459ifGqBVE3EKsWo";
+        const chatId = "6731058601";
+        const waNumber = "6285959633342";
+
+        const formatRp = (num) => 'Rp ' + parseInt(num).toLocaleString('id-ID');
+
+        // ==========================================
+        // SISTEM VIEW SWITCHER (SPA ROUTER)
+        // ==========================================
+        function switchView(target) {
+            // Sembunyikan semua
+            document.getElementById('view-portal').classList.add('hidden');
+            document.getElementById('view-kopken').classList.add('hidden');
+            document.getElementById('view-netflix').classList.add('hidden');
+
+            // Tampilkan target
+            document.getElementById(`view-${target}`).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            const body = document.body;
+            const glow = document.getElementById('main-glow');
+
+            if (target === 'portal') {
+                body.style.backgroundColor = '#0F172A';
+                glow.style.background = 'radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 40%)';
+                document.getElementById('particle-container').innerHTML = ''; // Clear particles
+            } 
+            else if (target === 'kopken') {
+                body.style.backgroundColor = '#F9F1E7';
+                glow.style.background = 'radial-gradient(circle at 50% 50%, rgba(232, 163, 89, 0.15) 0%, rgba(249, 241, 231, 0) 50%), radial-gradient(circle at 80% 20%, rgba(160, 92, 58, 0.1) 0%, rgba(249, 241, 231, 0) 40%)';
+                initKopkenParticles();
+            } 
+            else if (target === 'netflix') {
+                body.style.backgroundColor = '#141414';
+                glow.style.background = 'radial-gradient(circle at 50% 50%, rgba(229, 9, 20, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0, 0, 0, 0.1) 0%, transparent 40%)';
+                document.getElementById('particle-container').innerHTML = ''; // Clear particles
+            }
+        }
+
+        // ==========================================
+        // LOGIKA TOAST & ANIMASI GLOBAL
+        // ==========================================
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-gray-900/95 backdrop-blur-md text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transform transition-all duration-500 translate-y-[-30px] opacity-0 border border-white/10 z-[200]';
+            toast.innerHTML = `<div class="bg-green-500/20 text-green-400 p-2 rounded-full flex-shrink-0 w-8 h-8 flex items-center justify-center"><i class="fas fa-check"></i></div> <p class="text-sm font-medium leading-tight">${message}</p>`;
+            
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-[-30px]', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            });
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-[-30px]', 'opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        function showFullscreenLoader(type, isWaRedirect, waUrl) {
+            const screen = document.getElementById('thankyou-screen');
+            const content = document.getElementById('thankyou-content');
+            const quoteEl = document.getElementById('thankyou-quote');
+            const titleEl = document.getElementById('thankyou-title');
+            const iconWrap = document.getElementById('thankyou-icon-wrapper');
+
+            let quotes = [];
+            if (type === 'kopken') {
+                iconWrap.innerHTML = '<i class="fas fa-coffee text-5xl text-kenangan-accent animate-bounce"></i>';
+                iconWrap.className = "w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(232,163,89,0.4)]";
+                titleEl.textContent = "Pesanan Dirangkai!";
+                quotes = [
+                    "Beli kopi buat begadang,<br>Jangan lupa bayar pakai uang.<br>Terima kasih sudah datang,<br>Pesananmu segera direkap sayang! ☕",
+                    "Pergi ke pasar beli melati,<br>Pulangnya beli Kenangan Mantan.<br>Pesananmu sudah kami dapati,<br>Siap meluncur ke tujuan! 🚀",
+                    "Jalan-jalan ke Cileunyi,<br>Jangan lupa mampir ngopi.<br>Pesananmu diproses di sini,<br>Sistem beralih bentar lagi! ✨"
+                ];
+            } else if (type === 'netflix') {
+                iconWrap.innerHTML = '<i class="fas fa-play text-5xl text-netflix-primary animate-pulse"></i>';
+                iconWrap.className = "w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(229,9,20,0.4)]";
+                titleEl.textContent = "Menyiapkan Akun...";
+                quotes = [
+                    "Siapin cemilan dan posisi pewe,<br>Akun Netflix kamu lagi diproses nih! 🍿",
+                    "Udah tau mau maraton drakor apa hari ini?<br>Tunggu bentar ya, admin lagi siapin profilnya! 🎬",
+                    "Mantan boleh ngilang, tapi langganan Netflix pantang tumbang. Sistem memproses pesananmu! ✨"
+                ];
+            }
+
+            quoteEl.innerHTML = quotes[Math.floor(Math.random() * quotes.length)];
+
+            screen.classList.remove('hidden');
+            setTimeout(() => screen.classList.remove('opacity-0'), 10);
+            
+            setTimeout(() => {
+                content.classList.remove('scale-75', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 100);
+
+            // Tunggu 5 Detik
+            setTimeout(() => {
+                if (isWaRedirect) {
+                    window.open(waUrl, '_blank');
+                } else {
+                    showPaymentPopup();
+                }
+
+                setTimeout(() => {
+                    screen.classList.add('opacity-0');
+                    content.classList.remove('scale-100', 'opacity-100');
+                    content.classList.add('scale-75', 'opacity-0');
+                    setTimeout(() => screen.classList.add('hidden'), 500);
+                }, 1000);
+            }, 5000);
+        }
+
+        function showPaymentPopup() {
+            const popup = document.getElementById('payment-popup');
+            const popupContent = document.getElementById('payment-popup-content');
+            popup.classList.remove('hidden');
+            setTimeout(() => {
+                popup.classList.remove('opacity-0');
+                popupContent.classList.remove('scale-95');
+                popupContent.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closePaymentPopup() {
+            const popup = document.getElementById('payment-popup');
+            const popupContent = document.getElementById('payment-popup-content');
+            popup.classList.add('opacity-0');
+            popupContent.classList.remove('scale-100');
+            popupContent.classList.add('scale-95');
+            setTimeout(() => popup.classList.add('hidden'), 300);
+        }
+
+        // ==========================================
+        // LOGIKA NETFLIX MODULE
+        // ==========================================
+        let netflixPrice = 0;
+
+        function calcNetflixTotal() {
+            const selected = document.querySelector('input[name="nflx-pkg"]:checked');
+            if(selected) {
+                netflixPrice = parseInt(selected.getAttribute('data-price'));
+                document.getElementById('nflx-total').textContent = formatRp(netflixPrice);
+            }
+            validateNetflixForm();
+        }
+
+        function validateNetflixForm() {
+            const pkg = document.querySelector('input[name="nflx-pkg"]:checked');
+            const name = document.getElementById('nflx-name').value.trim();
+            const profile = document.getElementById('nflx-profile').value.trim();
+            const btnTele = document.getElementById('btn-submit-tele-nflx');
+            const btnWa = document.getElementById('btn-submit-wa-nflx');
+
+            if (pkg && name.length > 1 && profile.length > 0) {
+                // Aktifkan Tele
+                btnTele.disabled = false;
+                btnTele.className = "w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-900/50 transition duration-300 flex justify-center items-center gap-2 active:scale-95 border border-blue-500";
+                // Aktifkan WA
+                btnWa.disabled = false;
+                btnWa.className = "w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-green-900/50 transition duration-300 flex justify-center items-center gap-2 active:scale-95 border border-green-500";
+            } else {
+                // Nonaktifkan
+                btnTele.disabled = true;
+                btnTele.className = "w-full bg-white/10 text-gray-500 font-bold py-3 rounded-xl transition duration-300 flex justify-center items-center gap-2 cursor-not-allowed border border-transparent";
+                btnWa.disabled = true;
+                btnWa.className = "w-full bg-white/10 text-gray-500 font-bold py-3 rounded-xl transition duration-300 flex justify-center items-center gap-2 cursor-not-allowed border border-transparent";
+            }
+        }
+
+        function submitOrderNetflix(method) {
+            const pkgValue = document.querySelector('input[name="nflx-pkg"]:checked').value;
+            const name = document.getElementById('nflx-name').value.trim();
+            const profile = document.getElementById('nflx-profile').value.trim();
+            
+            const message = `🍿 *ORDER NETFLIX PREMIUM* 🍿
+--------------------------------------------------
+Nama Pemesan: ${name}
+Paket Sewa: ${pkgValue} (Private 1 User)
+Request Nama Profil: "${profile}"
+--------------------------------------------------
+Total Tagihan: ${formatRp(netflixPrice)}
+
+Mohon dibantu proses aktivasi akun dan tagihan QRIS/Rekeningnya ya min!`;
+
+            const encodedMessage = encodeURIComponent(message);
+
+            if (method === 'telegram') {
+                const urlAPI = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodedMessage}`;
+                
+                // Loading UI Button
+                const btn = document.getElementById('btn-submit-tele-nflx');
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i> Memproses...';
+                btn.disabled = true;
+
+                fetch(urlAPI)
+                    .then(res => {
+                        if(res.ok) {
+                            showFullscreenLoader('netflix', false, '');
+                            // Reset Form
+                            document.getElementById('nflx-name').value = '';
+                            document.getElementById('nflx-profile').value = '';
+                            document.querySelector('input[name="nflx-pkg"]:checked').checked = false;
+                            document.getElementById('nflx-total').textContent = 'Rp 0';
+                            netflixPrice = 0;
+                        } else {
+                            showToast("Gagal kirim ke bot, silakan gunakan opsi WA.");
+                        }
+                    })
+                    .catch(err => showToast("Koneksi error, gunakan opsi WA."))
+                    .finally(() => {
+                        btn.innerHTML = '<i class="fas fa-bolt text-xl"></i> Pesan Otomatis (Proses Cepat)';
+                        validateNetflixForm();
+                    });
+
+            } else if (method === 'whatsapp') {
+                const waUrl = `https://wa.me/${waNumber}?text=${encodedMessage}`;
+                showFullscreenLoader('netflix', true, waUrl);
+            }
+        }
+
+
+        // ==========================================
+        // LOGIKA KOPI KENANGAN MODULE (EXISTING)
+        // ==========================================
+        // Memadatkan 951 Daftar Outlet menjadi format String untuk menghemat Memori
         const rawOutlets = [
             "Jakarta|Menara Standart Chartered,Setiabudi One,Kota Kasablanka,Tempo Scan Tower,Menara Karya,Grand Indonesia,Capital Place,Skyline Building,Graha CIMB Niaga,Electronic City,Mayapada Hospital,Lippo Mall Puri,Pejaten Village,Kyai Maja,Lotte Avenue,Plaza Atrium,Kalibata City,Mall Ambasador,Citywalk Sudirman,Sahid Sudirman,Cibubur Junction,Pasaraya Blok M,Summitmas Tower,Plaza Festival,Mall Kelapa Gading 3,Wisma KEIAI,Mall @BASSURA CITY,Sopo Del Tower,Tempo Pavilion 1,Pondok Indah Mall 2,Food Centrum Sunter,Pacific Place,Green Pramuka Square,Baywalk Mall Pluit,Menara Jamsostek,Lotte Mart Fatmawati,City Plaza Jatinegara,Gandaria City,Lippo Plaza Kramat Jati,AEON Mall Jakarta Garden City,Pusat Grosir Cililitan,Central Park,Sudirman Park,Pluit Village,Epicentrum Walk,Transmart Cempaka Putih,Mall Taman Anggrek,Citywalk Gajah Mada,ITC Cempaka Mas,ITC Mangga Dua,Plaza Indonesia,Emporium Pluit,Blok M Plaza,Mall Metro Cipulir,La Codefin Kemang,The Vida Kebon Jeruk,Mall Ciputra Jakarta,Lippo Mall Puri (2),NEO SOHO,Padang Merdeka Kota Tua,Season City,BP Jamsostek,Citra Towers Kemayoran,Cilandak Town Square,Lokasari Square,Plaza Senayan,Gedung Aurum,Tamini Square,Wisma BNI 46,Lippo Mall Kemang,Grand Cakung Mall,Raffles Square Juanda,Transmart Cilandak,Ruko PIK,Artha Graha,RS. Polri,Thamrin City,Bidakara,Shell Pasar Minggu,Shell Gunung Sahari,RS. Saint Carolus,The Crest West Vista,JB Tower,Mangga Dua Square,Teras Benhil,Ratu Plaza,SPBU Jalan Panjang,SPBU Arta Gading,Menara Digitaraya,One Bell Park Cinere,Ruko Rawamangun,SPBU Jalan Supomo,Ruko Jalan Bek. Murad,Ruko Cempaka Putih,Ruko Tanjung Duren,Ruko Cideng,Pasar Pagi Mangga Dua,Shell Ciputat 1,Alamanda Tower,Shell Semper Koja,Ruko Lebak Bulus,Food Hub Cyber Tower 2,Metro Park Residence,Cik Ditiro Menteng,Mall Artha Gading,Ruko MOI,Gedung GKBI,City Plaza Wisma Mulia,SOHO Pancoran,Pancoran China Town,Ruko Taman Mutiara Palem,LA Terrace,Menara Tendean Office,Green Sedayu Mall,FX Mall Sudirman,BP Meruya,Superindo M. Kahfi,SPBU Pertamina (Kapten Tendean),SPBU Pertamina (S. Parman),SPBU Pertamina (Kalimalang Duren Sawit),SPBU Pertamina (Gandaria Pasar Rebo),SPBU Pertamina (Lenteng Agung),Ruko Pulogadung Trade Center,SPBU Pertamina (M. Kahfi II),SPBU Pertamina (Taman Surya),SPBU Pertamina (Kamal Muara),SPBU Pertamina (Jembatan Tiga),SPBU Pertamina (Radjiman Cakung),SPBU Pertamina (Panjang Kelapa Dua),SPBU Pertamina (Palmerah Utara),SPBU Pertamina (Petukangan),Palmerah,SPBU DODO (Raya Condet),SPBU DODO (Raden Inten),SPBU Pertamina (Pasar Minggu),SPBU Pertamina (Gatot Subroto),SPBU Pertamina (Pulo Gebang),SPBU Pertamina (Gedong Panjang),Pusat Mode Tanah Abang,SPBU Pertamina (Tongkol),Rumah Kenangan,Ruko Elang Laut,Ruko Joglo,SPBU Meruya Utara,Ruko Duta Mas Jelambar,Ruko Muara Karang,RS Pelni,SPBU Hayam Wuruk,Ruko Boulevard Kelapa Gading,Ruko Kramat Jaya Koja,RS Husada,Ruko Bendungan Hilir,Stasiun Gambir Selatan,Stasiun Mangga Besar,Stasiun Palmerah,Stasiun Jakarta Kota,Stasiun Duri,Lotte Shopping Avenue (Lower Ground),Central Grand Indonesia 2nd Floor,Taman Ismail Marzuki,Pusat Jantung Nasional Harapan Kita,Food Court PIM 1,Point Square,Cipete Raya,Intiland Tower,RS Yarsi,Mampang,Ruko Kalisari,SPBU Jagakarsa,Ruko Pisangan,Stasiun Senen,Ruko Dewi Sartika,Kemayoran (DT),Ruko Greenville,Thamrine Nine,Blok M Plaza (LG),Epicentrum Walk,Ceger,Stasiun Klender,SPBU Minangkabau,SPBU Pondok Kopi,SPBU Letjen Suprapto,SPBU Kebayoran Lama,SPBU Perintis Kemerdekaan,SPBU Shell Hasyim Ashari,Beltway Office Park,Pasar Jaya Teluk Gong 2,Gama Tower,Rumah Sakit Jakarta,Cilangkap,Ruko Johar Baru,Pusdiklat Depnaker,SPBU Sunter Kemayoran,Menara Imperium,Ruko Sedayu City,Grapari Telkomsel Mall Sarinah,Ruko Bukit Duri Tebet,Ruko Malaka Sari,The Park Pejaten,Ruko Karang Tengah Lebak Bulus,Ruko Sunset Avenue Citra 8,RSCM Gedung Kirana,Ruko Pecenongan",
             "Bogor|Botani Square Mall,Lippo Plaza Ekalokasari,Transmart Yasmin Bogor,Bogor Trade Mall,Mall Boxies 123,Lotte Grosir Pakansari,Ruko Kota Wisata,SPBU Cibogo,Ruko Gadog Ciawi,Super Indo Pajajaran Bogor,Ruko Pasirkuda Ciomas,Ruko Cisarua Puncak,SPBU Mayor Oking Cibinong,SPBU Cikaret Cibinong,Superindo Limus Pratama,SPBU Pajajaran Bogor,SPBU Kedung Halang,Ruko Pomad,Ruko Pandu Raya Bogor,Cibinong City Mall,Toserba Yogya (Grand Dramaga),Metland Cileungsi,Ruko Cileungsi,Ruko Legenda Wisata,Ruko Sukahati Cibinong,Ruko Pondok Rajeg,SPBU Jampang Parung,Ruko Parung,Rest Area KM 21 Jagorawi,Stasiun Bogor,Stasiun Cilebut,Stasiun Parung Panjang,SPBU BP Alternatif Sentul,Rancamaya Bogor,Cilendek Bogor,Ruko Babakan Madang Bogor,Living World Kota Wisata,Millennium City",
@@ -342,11 +745,7 @@
             "Garut|Ruko IBC Garut",
             "Mojokerto|Sunrise Mall Mojokerto"
         ];
-
-        // Object penampung kota dan outlet
         const cityData = {};
-        
-        // Memecah data string menjadi Object JavaScript
         rawOutlets.forEach(line => {
             const parts = line.split('|');
             const city = parts[0];
@@ -354,7 +753,6 @@
             cityData[city] = branches;
         });
 
-        // Data Menu Berdasarkan PRD
         const menuData = [
             // BUNDLING (Latar Cokelat Gelap)
             { id: 'b1', cat: 'bundling', name: 'Paket Hemat 40K', old: 60000, new: 40000, type: 'bundling', img: 'https://placehold.co/400x400/2C1A0D/F9F1E7?text=Paket+Hemat&font=Montserrat', opts: [
@@ -404,21 +802,17 @@
             { id: 'f9', cat: 'bakery', name: 'Sandwich Chicken Tartar', old: 22000, new: 15000, type: 'food', img: 'https://placehold.co/400x400/F9F1E7/2C1A0D?text=Chicken+Tartar&font=Montserrat', placeholderNote: 'Misal: Sausnya agak banyakin, biar kisah kasihku ga kering-kering amat.' }
         ];
 
-        // State Variables
         let cart = [];
         let currentModalItem = null;
 
-        // Formater Harga
-        const formatRp = (num) => 'Rp ' + num.toLocaleString('id-ID');
-
         document.addEventListener('DOMContentLoaded', () => {
-            initParticles();
             initCities();
             renderMenu();
         });
 
-        function initParticles() {
+        function initKopkenParticles() {
             const container = document.getElementById('particle-container');
+            container.innerHTML = '';
             const icons = ['fa-coffee', 'fa-leaf', 'fa-cube'];
             for(let i=0; i<15; i++) {
                 const particle = document.createElement('i');
@@ -484,7 +878,6 @@
             });
         }
 
-        // Fungsi Dinamis untuk Sembunyikan/Tampilkan Opsi Es
         window.toggleIceOptions = function() {
             const temp = document.querySelector('input[name="mod-temp"]:checked')?.value;
             const iceContainer = document.getElementById('ice-level-container');
@@ -506,7 +899,7 @@
             document.getElementById('modal-btn-price').textContent = formatRp(item.new);
 
             const optionsContainer = document.getElementById('modal-options-container');
-            optionsContainer.innerHTML = ''; // Reset
+            optionsContainer.innerHTML = ''; 
 
             if (item.type === 'bundling') {
                 let html = `<label class="block text-sm font-semibold mb-2">Pilih Kombinasi Wajib <span class="text-red-500">*</span></label>
@@ -520,7 +913,6 @@
             else if (item.type === 'drink') {
                 optionsContainer.innerHTML = `
                     <div class="space-y-5">
-                        <!-- Penyajian Ice / Hot -->
                         <div>
                             <label class="block text-sm font-semibold mb-2">Penyajian <span class="text-red-500">*</span></label>
                             <div class="grid grid-cols-2 gap-3">
@@ -538,8 +930,6 @@
                                 </label>
                             </div>
                         </div>
-
-                        <!-- Ukuran -->
                         <div>
                             <label class="block text-sm font-semibold mb-2">Ukuran Cup</label>
                             <select id="mod-size" class="w-full p-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm outline-none focus:ring-2 focus:ring-kenangan-primary">
@@ -547,8 +937,6 @@
                                 <option value="Large">Large (*)</option>
                             </select>
                         </div>
-
-                        <!-- Level Gula & Es -->
                         <div class="grid grid-cols-1 gap-4 bg-gray-50 p-3 rounded-xl border border-gray-100">
                             <div>
                                 <label class="block text-xs font-semibold mb-2 text-gray-600">Level Gula</label>
@@ -586,8 +974,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Ekstra -->
                         <div>
                             <label class="block text-sm font-semibold mb-2">Kustomisasi Ekstra</label>
                             <div class="space-y-2 text-sm">
@@ -602,14 +988,12 @@
             optionsContainer.innerHTML += `
                 <div class="${item.type === 'drink' ? 'mt-4' : ''}">
                     <label class="block text-sm font-semibold mb-2">Catatan Item (Opsional)</label>
-                    <input type="text" id="mod-note" placeholder="${item.placeholderNote}" class="w-full p-3 rounded-lg border border-gray-200 bg-gray-50 text-sm outline-none focus:border-kenangan-primary focus:ring-1 focus:ring-kenangan-primary transition">
+                    <input type="text" id="mod-note" placeholder="${item.placeholderNote}" class="w-full p-3 rounded-lg border border-gray-200 bg-gray-50 text-sm outline-none focus:border-kenangan-primary focus:ring-1 focus:ring-kenangan-primary transition text-kenangan-dark">
                 </div>
             `;
 
-            // Show Modal
             const overlay = document.getElementById('modal-overlay');
             overlay.classList.remove('hidden');
-            // Allow display block to render before triggering opacity transition
             setTimeout(() => overlay.classList.remove('opacity-0'), 10);
         }
 
@@ -621,36 +1005,11 @@
             currentModalItem = null;
         }
 
-        // FUNGSI BARU: Toast Pop-up Notification
-        function showToast(message) {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'bg-kenangan-dark/95 backdrop-blur-md text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transform transition-all duration-500 translate-y-[-30px] opacity-0 border border-kenangan-accent/30';
-            toast.innerHTML = `<div class="bg-green-500/20 text-green-400 p-2 rounded-full flex-shrink-0 w-8 h-8 flex items-center justify-center"><i class="fas fa-check"></i></div> <p class="text-sm font-medium leading-tight">${message}</p>`;
-            
-            container.appendChild(toast);
-            
-            // Animasi masuk
-            requestAnimationFrame(() => {
-                toast.classList.remove('translate-y-[-30px]', 'opacity-0');
-                toast.classList.add('translate-y-0', 'opacity-100');
-            });
-
-            // Animasi keluar setelah 3 detik
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-[-30px]', 'opacity-0');
-                setTimeout(() => toast.remove(), 500);
-            }, 3000);
-        }
-
         function addToCartFromModal() {
             if (!currentModalItem) return;
-
-            // Simpan nama item sebelum closeModal menghapusnya (Mencegah Error TypeError)
             const itemName = currentModalItem.name;
-
             let details = [];
+
             if (currentModalItem.type === 'bundling') {
                 details.push(document.getElementById('mod-bundle-sel').value);
             } else if (currentModalItem.type === 'drink') {
@@ -659,47 +1018,29 @@
                 const sugar = document.querySelector('input[name="mod-sugar"]:checked').value;
                 
                 details.push(temp, size);
-                
-                // Tambahkan info gula jika bukan normal
                 if(sugar !== 'Normal Sugar') details.push(sugar);
-                
-                // Tambahkan info es jika memilih Ice dan bukan normal
                 if (temp === 'Ice') {
                     const ice = document.querySelector('input[name="mod-ice"]:checked').value;
                     if(ice !== 'Normal Ice') details.push(ice);
                 }
-                
                 document.querySelectorAll('.mod-extras:checked').forEach(chk => {
                     details.push(chk.value);
                 });
             }
 
             const note = document.getElementById('mod-note').value;
-
             cart.push({
                 item: currentModalItem,
                 details: details.join(', '),
                 note: note
             });
 
-            // Tutup modal yang mengubah currentModalItem menjadi null
             closeModal();
             updateCartUI();
-            validateForm();
+            validateKopkenForm();
 
-            // Panggil Animasi Keren & Toast menggunakan variabel itemName yang sudah disimpan
             playFlyToCartAnimation();
             showToast(`<b>${itemName}</b><br>Berhasil masuk ke keranjang!`);
-
-            // Minimalist feedback di tombol bawah
-            const btnTele = document.querySelector('#btn-submit-tele');
-            const btnWa = document.querySelector('#btn-submit-wa');
-            btnTele.innerHTML = '<i class="fas fa-check"></i> Ditambahkan';
-            btnWa.innerHTML = '<i class="fas fa-check"></i> Ditambahkan';
-            setTimeout(() => {
-                btnTele.innerHTML = '<i class="fas fa-bolt text-xl"></i> Pesan Otomatis (Langsung Diproses)';
-                btnWa.innerHTML = '<i class="fab fa-whatsapp text-xl"></i> Pesan via Admin (Tanya-tanya)';
-            }, 1000);
         }
 
         function playFlyToCartAnimation() {
@@ -708,25 +1049,18 @@
             const badge = document.getElementById('cart-badge');
             const rect = cartBtn.getBoundingClientRect();
 
-            // Buat elemen terbang
             const flyer = document.createElement('div');
             flyer.innerHTML = '<i class="fas fa-coffee text-white text-xl"></i>';
             flyer.className = 'fixed z-[100] flex items-center justify-center w-12 h-12 bg-kenangan-primary rounded-full shadow-lg';
-            
-            // Mulai dari tengah bawah (posisi perkiraan saat modal ditutup)
             flyer.style.left = '50%';
             flyer.style.top = '70%';
             flyer.style.transform = 'translate(-50%, -50%) scale(0)';
             flyer.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
             document.body.appendChild(flyer);
 
-            // Trigger reflow agar animasi langsung jalan
             flyer.getBoundingClientRect();
-
-            // Step 1: Muncul pop-up di tengah
             flyer.style.transform = 'translate(-50%, -50%) scale(1)';
 
-            // Step 2: Terbang ke arah ikon keranjang di atas
             setTimeout(() => {
                 flyer.style.left = `${rect.left + rect.width / 2}px`;
                 flyer.style.top = `${rect.top + rect.height / 2}px`;
@@ -734,7 +1068,6 @@
                 flyer.style.opacity = '0';
             }, 400);
 
-            // Step 3: Efek pantulan pada keranjang setelah elemen sampai
             setTimeout(() => {
                 flyer.remove();
                 cartIcon.classList.add('scale-150', 'text-kenangan-primary');
@@ -749,7 +1082,7 @@
         function removeFromCart(index) {
             cart.splice(index, 1);
             updateCartUI();
-            validateForm();
+            validateKopkenForm();
         }
 
         function handleCityChange() {
@@ -761,21 +1094,17 @@
                 branchSelect.disabled = true;
             } else {
                 branchSelect.disabled = false;
-                // Sekarang mengambil cabang yang SANGAT akurat dari database JS
-                let branches = cityData[city] || ["Hubungi Admin via WA (Konfirmasi Outlet Terdekat)"];
+                let branches = cityData[city] || [];
                 branches.forEach(b => {
-                    // Membersihkan kata "Kopi Kenangan" agar dropdown lebih estetik
                     const cleanName = b.replace('Kopi Kenangan ', '').trim();
                     branchSelect.innerHTML += `<option value="${cleanName}">${cleanName}</option>`;
                 });
             }
-            validateForm();
+            validateKopkenForm();
         }
 
-        // PRD 6.3: Logika Perhitungan Pajak Cabang Mall
         function checkMallSurcharge() {
             const branch = document.getElementById('cust-branch').value;
-            // String matching pattern required by PRD
             const mallPattern = /mall|plaza|tower|city|junction|avenue|walk|central park|grand indonesia|paris van java/i;
             return mallPattern.test(branch) ? 3000 : 0;
         }
@@ -810,14 +1139,13 @@
             }
         }
 
-        function validateForm() {
+        function validateKopkenForm() {
             const name = document.getElementById('cust-name').value.trim();
             const city = document.getElementById('cust-city').value;
             const branch = document.getElementById('cust-branch').value;
-            const btnTele = document.getElementById('btn-submit-tele');
-            const btnWa = document.getElementById('btn-submit-wa');
+            const btnTele = document.getElementById('btn-submit-tele-kopken');
+            const btnWa = document.getElementById('btn-submit-wa-kopken');
 
-            // Calculate Totals
             let subtotal = cart.reduce((sum, c) => sum + c.item.new, 0);
             document.getElementById('summary-subtotal').textContent = formatRp(subtotal);
 
@@ -838,7 +1166,6 @@
             const total = subtotal + surcharge;
             document.getElementById('summary-total').textContent = formatRp(total);
 
-            // PRD 6.4 Validasi Tombol
             if (cart.length > 0 && name.length >= 2 && city !== "" && branch !== "") {
                 btnTele.disabled = false;
                 btnTele.classList.remove('bg-gray-400', 'cursor-not-allowed');
@@ -858,7 +1185,7 @@
             }
         }
 
-        function submitOrder(method) {
+        function submitOrderKopken(method) {
             const name = document.getElementById('cust-name').value.trim();
             const city = document.getElementById('cust-city').value;
             const branch = document.getElementById('cust-branch').value;
@@ -895,122 +1222,38 @@ Mohon dibantu proses order ya, terima kasih!`;
             const encodedMessage = encodeURIComponent(message);
             
             if (method === 'telegram') {
-                // Konfigurasi Asli Telegram Bot Anda
-                const botToken = "8765196047:AAGSnN7VoGnXxQK5rl5459ifGqBVE3EKsWo";
-                const chatId = "6731058601";
-                const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodedMessage}`;
+                const urlAPI = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodedMessage}`;
                 
-                // Ubah status tombol jadi loading
-                const btn = document.getElementById('btn-submit-tele');
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i> Sedang Memproses...';
+                const btn = document.getElementById('btn-submit-tele-kopken');
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i> Memproses...';
                 btn.disabled = true;
-                document.getElementById('btn-submit-wa').disabled = true;
+                document.getElementById('btn-submit-wa-kopken').disabled = true;
 
-                // Tembak Data Latar Belakang ke Telegram Admin
-                fetch(telegramUrl)
-                    .then(response => {
-                        if(response.ok) {
-                            showThankYouScreen(false); // false = jangan buka WA, tapi buka popup
+                fetch(urlAPI)
+                    .then(res => {
+                        if(res.ok) {
+                            showFullscreenLoader('kopken', false, '');
+                            // Reset Kopken Form
+                            cart = [];
+                            updateCartUI();
+                            document.getElementById('cust-name').value = '';
+                            document.getElementById('cust-notes').value = '';
+                            document.getElementById('cust-city').selectedIndex = 0;
+                            handleCityChange();
                         } else {
-                            showToast("Gagal mengirim ke kasir. Silakan coba via WA.");
+                            showToast("Gagal kirim ke bot, silakan gunakan opsi WA.");
                         }
                     })
-                    .catch(error => {
-                        showToast("Terjadi kesalahan koneksi. Silakan coba via WA.");
-                    })
+                    .catch(err => showToast("Koneksi error, gunakan opsi WA."))
                     .finally(() => {
-                        // Kembalikan tombol seperti semula
                         btn.innerHTML = '<i class="fas fa-bolt text-xl"></i> Pesan Otomatis (Langsung Diproses)';
-                        validateForm();
+                        validateKopkenForm();
                     });
                     
             } else if (method === 'whatsapp') {
-                const waNumber = "6285959633342";
                 const waUrl = `https://wa.me/${waNumber}?text=${encodedMessage}`;
-                showThankYouScreen(true, waUrl); // true = buka WA
+                showFullscreenLoader('kopken', true, waUrl);
             }
-        }
-        
-        function showThankYouScreen(redirectToWa, waUrl = '') {
-            // KOLEKSI PANTUN (BARU)
-            const quotes = [
-                "Beli kopi buat begadang,<br>Jangan lupa bayar pakai uang.<br>Terima kasih sudah datang,<br>Pesananmu segera direkap sayang! ☕",
-                "Jalan-jalan ke Cileunyi,<br>Jangan lupa mampir ngopi.<br>Pesananmu diproses di sini,<br>Siap dikirim ntar lagi! ✨",
-                "Mantan boleh menjauh, tapi pesanan Kopi Kenangan bakal makin mendekat!",
-                "Pergi ke pasar beli melati,<br>Pulangnya beli Kenangan Mantan.<br>Pesananmu sudah kami dapati,<br>Siap meluncur ke tujuan! 🚀",
-                "Biar diread doang sama gebetan, yang penting pesanan Kopi Kenangan tetep jalan."
-            ];
-
-            const thankyouScreen = document.getElementById('thankyou-screen');
-            const thankyouContent = document.getElementById('thankyou-content');
-            const quoteEl = document.getElementById('thankyou-quote');
-            const waTextEl = document.getElementById('thankyou-wa-text');
-            
-            // Acak pantun/quote
-            quoteEl.innerHTML = quotes[Math.floor(Math.random() * quotes.length)];
-            
-            if (redirectToWa) {
-                waTextEl.innerHTML = "Tunggu sebentar, mengalihkanmu ke WhatsApp... (5 Detik)";
-            } else {
-                waTextEl.innerHTML = "Sistem telah meneruskan pesanan otomatis ke Outlet. Layar akan tertutup... (5 Detik)";
-            }
-            
-            // Tampilkan Layar Transisi
-            thankyouScreen.classList.remove('hidden');
-            setTimeout(() => thankyouScreen.classList.remove('opacity-0'), 10);
-            
-            setTimeout(() => {
-                thankyouContent.classList.remove('scale-75', 'opacity-0');
-                thankyouContent.classList.add('scale-100', 'opacity-100');
-            }, 100);
-
-            // Tunggu 5 DETIK
-            setTimeout(() => {
-                if (redirectToWa) {
-                    window.open(waUrl, '_blank');
-                } else {
-                    // Reset Keranjang Jika via Telegram (Sukses)
-                    cart = [];
-                    updateCartUI();
-                    document.getElementById('cust-name').value = '';
-                    document.getElementById('cust-notes').value = '';
-                    document.getElementById('cust-city').selectedIndex = 0;
-                    handleCityChange();
-                    
-                    // MUNCULKAN POPUP PEMBAYARAN KHUSUS TELEGRAM
-                    setTimeout(showPaymentPopup, 600); 
-                }
-                
-                // Sembunyikan layar transisi pelan-pelan
-                setTimeout(() => {
-                    thankyouScreen.classList.add('opacity-0');
-                    thankyouContent.classList.remove('scale-100', 'opacity-100');
-                    thankyouContent.classList.add('scale-75', 'opacity-0');
-                    setTimeout(() => thankyouScreen.classList.add('hidden'), 500);
-                }, 1000);
-            }, 5000); 
-        }
-        
-        function showPaymentPopup() {
-            const popup = document.getElementById('payment-popup');
-            const popupContent = document.getElementById('payment-popup-content');
-            popup.classList.remove('hidden');
-            setTimeout(() => {
-                popup.classList.remove('opacity-0');
-                popupContent.classList.remove('scale-95');
-                popupContent.classList.add('scale-100');
-            }, 10);
-        }
-
-        function closePaymentPopup() {
-            const popup = document.getElementById('payment-popup');
-            const popupContent = document.getElementById('payment-popup-content');
-            popup.classList.add('opacity-0');
-            popupContent.classList.remove('scale-100');
-            popupContent.classList.add('scale-95');
-            setTimeout(() => {
-                popup.classList.add('hidden');
-            }, 300);
         }
 
         function scrollToCart() {
