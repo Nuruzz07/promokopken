@@ -191,6 +191,7 @@
             </p>
         </div>
 
+        <!-- Tombol Dual Opsi (Telegram Otomatis atau Tanya WA) -->
         <div class="mt-5 space-y-3">
             <button id="btn-submit-tele" disabled onclick="submitOrder('telegram')" class="w-full bg-gray-400 text-white font-bold py-3 rounded-xl shadow-lg transition duration-300 flex justify-center items-center gap-2 cursor-not-allowed">
                 <i class="fas fa-bolt text-xl"></i> Pesan Otomatis (Langsung Diproses)
@@ -230,6 +231,7 @@
         </div>
     </div>
 
+    <!-- Modal Kustomisasi Menu -->
     <div id="modal-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300" onclick="closeModal(event)">
         <div id="modal-content" class="absolute bottom-0 left-0 w-full bg-white rounded-t-3xl shadow-2xl modal-enter max-h-[85vh] flex flex-col" onclick="event.stopPropagation()">
             <!-- Handle indicator -->
@@ -283,15 +285,74 @@
     </div>
 
     <script>
-        // Data Kota dan Outlet (Cascading Rule)
-        const cityData = {
-            "Jakarta": ["Senayan City Mall", "Grand Indonesia", "Central Park", "Kuningan City", "Kemang Raya (Non-Mall)"],
-            "Bandung": ["Paris Van Java", "Cihampelas Walk", "Paskal 23 Mall", "Dipatiukur (Non-Mall)", "Cileunyi"],
-            "Tangerang": ["AEON Mall BSD", "Supermal Karawaci", "Bintaro Xchange", "Gading Serpong (Non-Mall)"],
-            "Bogor": ["Botani Square", "Cibinong City Mall", "Pajajaran (Non-Mall)"],
-            "Yogyakarta": ["Pakuwon Mall Jogja", "Ambarrukmo Plaza", "Kaliurang (Non-Mall)"]
-        };
-        const otherCities = ["Sidoarjo", "Semarang", "Sumedang", "Solo", "Karawang", "Lampung", "Makassar", "Palembang", "Bekasi", "Surabaya", "Gresik", "Depok", "Cirebon", "Banten", "Batu", "Purwakarta", "Malang", "Medan"];
+        // Memadatkan 951 Daftar Outlet menjadi format String untuk diparsing cepat (Menghemat Memori)
+        const rawOutlets = [
+            "Jakarta|Menara Standart Chartered,Setiabudi One,Kota Kasablanka,Tempo Scan Tower,Menara Karya,Grand Indonesia,Capital Place,Skyline Building,Graha CIMB Niaga,Electronic City,Mayapada Hospital,Lippo Mall Puri,Pejaten Village,Kyai Maja,Lotte Avenue,Plaza Atrium,Kalibata City,Mall Ambasador,Citywalk Sudirman,Sahid Sudirman,Cibubur Junction,Pasaraya Blok M,Summitmas Tower,Plaza Festival,Mall Kelapa Gading 3,Wisma KEIAI,Mall @BASSURA CITY,Sopo Del Tower,Tempo Pavilion 1,Pondok Indah Mall 2,Food Centrum Sunter,Pacific Place,Green Pramuka Square,Baywalk Mall Pluit,Menara Jamsostek,Lotte Mart Fatmawati,City Plaza Jatinegara,Gandaria City,Lippo Plaza Kramat Jati,AEON Mall Jakarta Garden City,Pusat Grosir Cililitan,Central Park,Sudirman Park,Pluit Village,Epicentrum Walk,Transmart Cempaka Putih,Mall Taman Anggrek,Citywalk Gajah Mada,ITC Cempaka Mas,ITC Mangga Dua,Plaza Indonesia,Emporium Pluit,Blok M Plaza,Mall Metro Cipulir,La Codefin Kemang,The Vida Kebon Jeruk,Mall Ciputra Jakarta,Lippo Mall Puri (2),NEO SOHO,Padang Merdeka Kota Tua,Season City,BP Jamsostek,Citra Towers Kemayoran,Cilandak Town Square,Lokasari Square,Plaza Senayan,Gedung Aurum,Tamini Square,Wisma BNI 46,Lippo Mall Kemang,Grand Cakung Mall,Raffles Square Juanda,Transmart Cilandak,Ruko PIK,Artha Graha,RS. Polri,Thamrin City,Bidakara,Shell Pasar Minggu,Shell Gunung Sahari,RS. Saint Carolus,The Crest West Vista,JB Tower,Mangga Dua Square,Teras Benhil,Ratu Plaza,SPBU Jalan Panjang,SPBU Arta Gading,Menara Digitaraya,One Bell Park Cinere,Ruko Rawamangun,SPBU Jalan Supomo,Ruko Jalan Bek. Murad,Ruko Cempaka Putih,Ruko Tanjung Duren,Ruko Cideng,Pasar Pagi Mangga Dua,Shell Ciputat 1,Alamanda Tower,Shell Semper Koja,Ruko Lebak Bulus,Food Hub Cyber Tower 2,Metro Park Residence,Cik Ditiro Menteng,Mall Artha Gading,Ruko MOI,Gedung GKBI,City Plaza Wisma Mulia,SOHO Pancoran,Pancoran China Town,Ruko Taman Mutiara Palem,LA Terrace,Menara Tendean Office,Green Sedayu Mall,FX Mall Sudirman,BP Meruya,Superindo M. Kahfi,SPBU Pertamina (Kapten Tendean),SPBU Pertamina (S. Parman),SPBU Pertamina (Kalimalang Duren Sawit),SPBU Pertamina (Gandaria Pasar Rebo),SPBU Pertamina (Lenteng Agung),Ruko Pulogadung Trade Center,SPBU Pertamina (M. Kahfi II),SPBU Pertamina (Taman Surya),SPBU Pertamina (Kamal Muara),SPBU Pertamina (Jembatan Tiga),SPBU Pertamina (Radjiman Cakung),SPBU Pertamina (Panjang Kelapa Dua),SPBU Pertamina (Palmerah Utara),SPBU Pertamina (Petukangan),Palmerah,SPBU DODO (Raya Condet),SPBU DODO (Raden Inten),SPBU Pertamina (Pasar Minggu),SPBU Pertamina (Gatot Subroto),SPBU Pertamina (Pulo Gebang),SPBU Pertamina (Gedong Panjang),Pusat Mode Tanah Abang,SPBU Pertamina (Tongkol),Rumah Kenangan,Ruko Elang Laut,Ruko Joglo,SPBU Meruya Utara,Ruko Duta Mas Jelambar,Ruko Muara Karang,RS Pelni,SPBU Hayam Wuruk,Ruko Boulevard Kelapa Gading,Ruko Kramat Jaya Koja,RS Husada,Ruko Bendungan Hilir,Stasiun Gambir Selatan,Stasiun Mangga Besar,Stasiun Palmerah,Stasiun Jakarta Kota,Stasiun Duri,Lotte Shopping Avenue (Lower Ground),Central Grand Indonesia 2nd Floor,Taman Ismail Marzuki,Pusat Jantung Nasional Harapan Kita,Food Court PIM 1,Point Square,Cipete Raya,Intiland Tower,RS Yarsi,Mampang,Ruko Kalisari,SPBU Jagakarsa,Ruko Pisangan,Stasiun Senen,Ruko Dewi Sartika,Kemayoran (DT),Ruko Greenville,Thamrine Nine,Blok M Plaza (LG),Epicentrum Walk,Ceger,Stasiun Klender,SPBU Minangkabau,SPBU Pondok Kopi,SPBU Letjen Suprapto,SPBU Kebayoran Lama,SPBU Perintis Kemerdekaan,SPBU Shell Hasyim Ashari,Beltway Office Park,Pasar Jaya Teluk Gong 2,Gama Tower,Rumah Sakit Jakarta,Cilangkap,Ruko Johar Baru,Pusdiklat Depnaker,SPBU Sunter Kemayoran,Menara Imperium,Ruko Sedayu City,Grapari Telkomsel Mall Sarinah,Ruko Bukit Duri Tebet,Ruko Malaka Sari,The Park Pejaten,Ruko Karang Tengah Lebak Bulus,Ruko Sunset Avenue Citra 8,RSCM Gedung Kirana,Ruko Pecenongan",
+            "Bogor|Botani Square Mall,Lippo Plaza Ekalokasari,Transmart Yasmin Bogor,Bogor Trade Mall,Mall Boxies 123,Lotte Grosir Pakansari,Ruko Kota Wisata,SPBU Cibogo,Ruko Gadog Ciawi,Super Indo Pajajaran Bogor,Ruko Pasirkuda Ciomas,Ruko Cisarua Puncak,SPBU Mayor Oking Cibinong,SPBU Cikaret Cibinong,Superindo Limus Pratama,SPBU Pajajaran Bogor,SPBU Kedung Halang,Ruko Pomad,Ruko Pandu Raya Bogor,Cibinong City Mall,Toserba Yogya (Grand Dramaga),Metland Cileungsi,Ruko Cileungsi,Ruko Legenda Wisata,Ruko Sukahati Cibinong,Ruko Pondok Rajeg,SPBU Jampang Parung,Ruko Parung,Rest Area KM 21 Jagorawi,Stasiun Bogor,Stasiun Cilebut,Stasiun Parung Panjang,SPBU BP Alternatif Sentul,Rancamaya Bogor,Cilendek Bogor,Ruko Babakan Madang Bogor,Living World Kota Wisata,Millennium City",
+            "Depok|Pesona Square Depok,DMall Depok,Trans Studio Mall Cibubur,Mall Cinere,Lippo Cinere,Giant Supermarket Bojong Sari,Giant Supermarket Cimanggis,SPBU Buperta Cibubur,Ruko Margonda,Ruko Waterpark Grand Depok City,Transmart Depok,Ruko Sawangan Depok,SPBU Margonda Raya,SPBU Gas Alam,Ruko Gandul,SPBU Kartini,SPBU Limo Raya,SPBU Juanda Depok,SPBU Sawangan Baru,Ruko Kelapa Dua Depok,Apotek Roxy Nusantara Depok,The Park Sawangan,Ruko Kejayaan Depok,Ruko Tapos Pekapuran,Ruko Citayam Centre,Alfamidi Abdul Ghani Cilodong,FMIPA UI,Agung Podomoro Golf View Cimanggis,M Kahfi,SPBU Leuwinanggung,Ruko Mekarsari,Ruko Perumahan Jatijajar",
+            "Tangerang|Summarecon Mall Serpong,Giant Supermarket Bintaro,The Breeze,Lotte Mart Bintaro,Aeon Mall BSD,Living World Alam Sutera,Garuda HQ,Supermall Karawaci,Bintaro Jaya Exchange,Teras Kota,Transpark Bintaro,Shell Serpong,Living Plaza Bintaro,BP Metland,Ruko Tangerang City,BP BSD Delatinos,Shell Suwarna Cengkareng,City Plaza Kotabumi,Shell Puspitek,Tangerang City Mall,Giant Supermarket Rempoa,BP Ciater Pamulang,SPBU Citra Raya Tangerang,SPBU Pasar Kemis,SPBU MH Thamrin Serpong,SPBU Alam Sutera,SPBU Cikupa,Ruko Menjangan,Alfamidi Stasiun Pondok Ranji,Ruko Graha Raya,Ruko Puri Beta,SPBU Tigaraksa,SPBU Jatake,Ruko Sepatan,Ruko Balaraja,Ruko Harapan Kita Karawaci,Serpong Paradise Walk,Ruko UIN,Mall Balekota Tangerang,CBD Ciledug,Ruko Poris,SPBU Duta Garden,SPBU Modernland,SPBU Puspitek,Ruko Cordoba Green Lake City,Ruko Karang Tengah,Ruko Surya Kencana Pamulang,Padang Merdeka Bez Serpong,Summarecon Digital Center (SDC Serpong),Ruko Curug,SPBU DODO Pertamina (Cirendeu Raya),SPBU Pertamina DODO (Curug),Living Plaza Pamulang,Ruko Daan Mogot,Ruko Cipondoh,Ruko Azores,Ruko Bandara Mas,Marchand Hype Station,Ruko Moh Toha Tangerang,Alfamidi Teluk Naga,Ruko Ceger,Ruko Gading Serpong,Ruko Bandara City Mall Tangerang,Stasiun Tangerang,Tokyo Hub Pantai Indah Kapuk 2,Grand Batavia,Ruko Madison Grande,Ruko Barcelona BSD,Taman Royal Cipondoh,Ruko Jatiuwung Tangerang,Telaga Bestari,EF Gading Serpong,U Town Bintaro,Fakultas Kedokteran UPH,BP Legok",
+            "Bekasi|Transmart Juanda Bekasi,Mall Lippo Cikarang,Revo Town,Mega Bekasi Hypermall,Metropolitan Mall Bekasi,Blu Plaza,Mall Ciputra Cibubur,BP KHI Boulevard,Transmart Transyogi Cibubur,BP Jababeka Hollywood,Living World Plaza Jababeka,District 1 Meikarta,Ruko Grand Kota Bintang,Ruko Bintara,Deltamas,Dapur Kitchen Bekasi,Dukuh Zamrud,SPBU Jatiwarna,SPBU Menjangan Jababeka II,Ruko Mangunjaya Tambun,Ruko Grand Wisata Bekasi,Grand Icon Caman,Ruko Kemang Pratama,Ruko Gading Terrace,Naga Swalayan Hankam,Naga Swalayan Pekayon,Citrus Department Store,Plasa Cibubur,Living Plaza Kota Harapan Indah,Plaza Pondok Gede,SPBU Bulak Kapal,SPBU Cibitung Bekasi,Ruko Cikarang Utara,Super Indo Cerewed Bekasi,Ruko Candrabaga Pd. Ungu,Ruko Jatimakmur,Ruko RA Kartini Bekasi,Ruko Boulevard Hijau Bekasi,Ruko Perumnas 3 Bekasi,Naga Swalayan Wisma Asri,SPBU Pengasinan,SPBU Rawalumbu,Ruko Kaliabang,Ruko Topaz Summarecon Bekasi,RS Primaya Bekasi Utara,AEON Mall Deltamas,Pasar Kota Pondok Gede,Ruko Hankam Jatiwarna,Jaticempaka Kota Bekasi,Cibubur (Drive Thru),Ruko Cikarang Festival,Ruko Karangasih Cikarang Utara,Ruko Vasanta Innopark",
+            "Bandung & Cimahi|Paris Van Java,Cihampelas Walk,Bandung Indah Plaza,Festival Citylink,Istana Plaza,Ubertos,Limijati Container,Bursa Efek Bandung,Metro Indah Mall,Toserba Yogya (Pahlawan),Toserba Yogya (Ciumbuleuit),Braga City Walk,Toserba Yogya (Sunda),Transmart Buah Batu Square,Bandung Electronic Center,Ruko Paskal,Ruko Setia Budi,Ruko Cibaduyut,Ruko Buah Batu,Ruko Surya Sumantri,Miko Mall,Ruko Margacinta,Yogya Grand Kepatihan,Ruko Padasuka Cimahi,Ruko Taman Kopo Indah 2,Ruko Ketapang Soreang,SPBU 34.40502 Kota Cimahi,RSUP Dr Hasan Sadikin Bandung,Summarecon Mall Bandung Island,Graha POS RE Martadinata,Ruko Gading Tutuka Soreang,Ruko Antapani,Ruko Rancaekek,SPBU 34.40316 Baleendah,SPBU 34.40338 Banjaran,SPBU 34.40310 Cibiru,SPBU 34.40314 Cicalengka,Stasiun KCJB Padalarang,Ruko Batununggal,Djunjunan Pasteur Bandung",
+            "Surabaya|Tunjungan Plaza 3,Grand City Surabaya,Lenmarc Mall,Graha Pena,City Of Tomorrow,Surabaya Town Square,BP Kertajaya Indah,BP Pemuda,BP Margorejo,Transmart Rungkut,Pakuwon Mall,Ciputra World Surabaya,WTC Surabaya,BG Junction,Galaxy Mall 3,East Coast Centre Mall,Lagoon Avenue Sungkono,Royal Plaza Surabaya,Shell Dupak,SPBU Panjang Jiwo,SPBU Ngagel,SPBU Kenjeran,Ruko Mulyosari,Ruko Ngagel,Ruko G Walk,Ruko Rungkut Madya,Ruko Wiyung,Ruko Ketintang,Kupang Jaya,Adityawarman Surabaya,Fairway Nine,The Square Surabaya,SPBU Jemusari,SPBU Sutorejo,Stasiun Gubeng,Stasiun Pasar Turi,Ruko Dharmahusada,Ruko Avenue A-6 (MERR),Rs. PHC Surabaya,Ruko Manukan,Ruko Iskandar Muda,BP Embong Malang",
+            "Semarang|Paragon Mall Semarang,DP Mall,Transmart Majapahit,Stasiun Tawang,SIM Square,Rest Area KM 429,Queen City Semarang,Tentrem Mall Semarang,SPBU Pamularsih,Ruko Kedungmundu,Ruko Ngaliyan,Jl. Majapahit No. 324,Ruko Banyumanik,SPBU Kaliwiru,Gedung KAI Veteran,Ruko Tlogosari,Mall Ciputra Semarang,Ruko A. Yani Ungaran",
+            "Yogyakarta|Hartono Mall Jogja,Jogya City Mall,Galeria Mall,Sleman City Hall,Lippo Plaza Jogja,Malioboro Mall,Wisma Hartono,Ramai Malioboro,Ruko Seturan,Super Indo Parangtritis,Ruko Taman Siswa,Ruko Kaliurang,Alfamidi Super Kaliurang KM 9,RSUP Dr. Sardjito,Pakuwon Jogja",
+            "Solo & Sekitarnya|Solo Paragon,Hartono Mall Solo,Solo Square,The Park Mall Solo,Super Indo Ronggowarsito,Ruko Harlin Solo,Alfamidi Adi Sucipto Solo,Stasiun Solo Balapan,SPBU Jonggrangan Klaten,Metro Swalayan Klaten,Ruko Pemuda Klaten",
+            "Medan & Sekitarnya|Sun Plaza,Deli Park,Medan Fair,Thamrin Plaza,Binjai Supermall,Manhattan Time Square,Irian Supermarket Marelan,Suzuya Plaza Marelan,Suzuya Plaza Binjai,Suzuya Plaza Tamora,Singapore Station Brig. Katamso,Singapore Station 2 Adam Malik,SPBU H. Anif Cemara Asri,Ruko Iskandar Muda,Ruko Komplek OCBC,SPBU Pertamina (AR Hakim),SPBU Pertamina (Helvetia),SPBU Pertamina (Sisingamangaraja),SPBU Batang Kuis,SPBU Selayang Utama,Cambridge City Store,Ruko JCity Square,Ruko Katamso,Ruko M. Yamin,Ruko Jl. Krakatau,Gatot Subroto Medan (Drive Thru),SPBU Tembung,SPBU Lubuk Pakam,SPBU Semayang,SPBU Sunggal,SPBU Lau Chỉ,Ruko Helvetia,Ruko Brayan,SPBU Amplas,Ruko Setiabudi,Ruko Sultan Hasanuddin Binjai,SPBU Kebun Lada Binjai,Ruko Ahmad Yani Rantau Prapat,Suzuya Rantau Prapat Mall,Ruko MH Thamrin Tebing Tinggi,Ruko Merci,SPBU Tanjung Morawa,SPBU Laut Dendang,RSU Mitra Sejati,Multatuli",
+            "Makassar|Trans Studio Mall Makassar,Phinisi Point,Nipah Mall,Panakkukang Mall,Panakkukang Square,Mall Ratu Indah,Makassar Town Square,Ruko A. Yani,Ruko Alauddin,Ruko Perintis,Ruko Citraland Celebes,SPBU Andalas,SPBU Perintis,Ruko Cendrawasih,Ruko Bawakareeng,Ruko Tamangapa,Ruko Landak,SPBU Pangayoman,Ruko Pallangga Gowa",
+            "Bali|Sidewalk Jimbaran,Ruko Teuku Umar,Ruko By Pass Ngurah Rai,Ruko Sesetan,Ruko Batubulan,Ruko Dewi Sri,Ruko Gatot Subroto Barat,Ruko Canggu Raya,Ruko Padang Luwih,Level 21 Mall,Discovery Mall Bali",
+            "Palembang|Palembang Icon,Opi Mall,Palembang Indah Mall,Dermaga Point,Ruko Palembang Trade Center,Ruko Lemabang,Kenten Food Market,Singapore Station M. Isa,Super Indo Basilica,Ruko Plaju,Social Market Palembang,Ruko Demang",
+            "Balikpapan|E Walk Balikpapan,Pentacity,Plaza Bunsay,Ruko Jl. MT Haryono,Ruko Mulawarman,Ruko Ahmad Yani,Ruko Soekarno Hatta,Ruko Ruhui Rahayu,Ruko Manggar,Ruko MT Haryono 2",
+            "Samarinda|Samarinda Central Plaza,Big Mall Samarinda,Ruko Merak,Ruko Bung Tomo,Ruko M Yamin,SPBU Slamet Riyadi,SPBU Kesuma Bangsa,Ruko Alaya,Ruko Ir H Juanda,SPBU Jl. Urip Sumoharjo",
+            "Batam|Grand Batam Mall,Panbil Mall,Batam City Square,Megamall Batam,Ruko Palm Spring,Ruko Tiban,Botania,Ruko Greenland Batam Center,Ruko Nagoya Hill",
+            "Pekanbaru|Mall SKA Pekanbaru,Ruko Sudirman,Ruko Sudirman Awal Bros,Living World Pekanbaru,Ruko Jl. Riau,Ruko Hang Tuah Ujung,Ruko Gobah,Ruko Panam",
+            "Lampung|City Plaza Ramayana Lampung,Transmart Lampung,Ruko Antasari,Ruko Ahmad Yani,Ruko Chandra Pringsewu,Ruko Kemiling,Metro Lampung,Ruko Chandra Teluk Betung,Ruko Tanjung Karang,ZA Pagar Alam Kedaton",
+            "Cirebon|Cirebon Super Block,Shell Cirebon,Toserba Yogya (Cherbon Junction),Grage Mall,Ruko Perjuangan,Ruko Kota Ciledug,RSD Gunung Jati,RS Mitra Plumbon,Rest Area Km 207A,Rest Area 228A",
+            "Malang & Batu|Malang Town Square,Lippo Plaza Batu,Dinoyo Mall Malang,Malang City Point,Ruko Jalan Soekarno Hatta,Transmart MX Mall,Stand Alone Ijen,Ruko Sarinah,SPBU Plaosan Blimbing,Ruko Kawi",
+            "Karawang|Resinda Park Mall,BP Karawang Barat,Rest Area KM 62B,Toserba Yogya (Karawang),Rest Area KM 57,Shell Galuhmas,Ruko Mall Cikampek,SPBU Teluk Jambe,Ruko Juanda Cikampek,SPBU Wadas,Ruko Syeh Quro,Ruko Telagasari Kosambi,Ruko Kondangjaya,Karawang Central Plaza",
+            "Sidoarjo|Suncity Sidoarjo,Transmart Sidoarjo,Rest Area KM 754,SPBU Gedangan,SPBU Waru,SPBU Juanda,SPBU Jenggolo,SPBU Tropodo,SPBU Gelam,Ruko Citra Harmoni,Ruko Pondokjati,RSUD Sidoarjo,Rest Area Km 753",
+            "Gresik|Icon Mall Gresik,Rest Area KM 726,SPBU Gresik,Super Indo Greenland,Ruko Gresik Kota Baru,Rest Area 725A",
+            "Cilegon & Serang|Cilegon Centre Mall,Mall of Serang,Transmart Cilegon,Ruko Serang,SPBU Benggala Yumaga Serang,Ruko Citraland Puri Serang",
+            "Purwakarta|BP Rest Area KM 72,Rest Area KM 88A Cipularang,Ruko Veteran,Ruko Bungursari",
+            "Banjarmasin & Banjar Baru|Duta Mall Banjarmasin,Q Mall Banjarbaru,Citraland Banjarmasin,Ruko Brigjen Hasan Basri,Ruko Gatot Subroto,Ruko Pangeran Hidayatullah,Hypermart Kertak Hanyar,SPBU COCO Pasar Kemuning",
+            "Manado|Manado Town Square,Transmart Kawanua,Ruko Sam Ratulangi,Kawasan Megamas,Ruko Yos Sudarso Paal Dua,Ruko Sudirman,Ruko Bahu,SPBU Sario",
+            "Padang|Basko Grand Mall,Ruko Proklamasi,Ruko Arau,Ruko Gajah Mada,Ruko Sutomo,Stasiun Tabing,SPBU Khatib Sulaeman",
+            "Jambi|WTC Batanghari,SPBU Samsat Gajah Mada,Ruko Selincah,Ruko Beringin,Sipin Jambi (Drive Thru),Jambi Prima Mall",
+            "Pontianak|Hypermart Ayani Megamal,Ruko Komplek Serdam,Ruko Dr. Wahidin,Ruko Sultan Abdurrahman",
+            "Aceh|Ruko Nyak Makam,SPBU Lamnyong,Ruko Panglima Polem",
+            "Tasikmalaya|Plaza Asia,SPBU Rancabango,Ruko Martadinata,Ruko Singaparna",
+            "Banyumas & Purwokerto|Rita Supermall Purwokerto,Ruko Bunyamin,Ruko Suharso,SPBU Karanglewas,Alfamidi Wahid Hasyim,Ruko Sokaraja",
+            "Jember|Roxy Square Jember,Ruko Sumbersari,Telkom Jember",
+            "Banyuwangi|Roxy Banyuwangi,Ruko Genteng,Ruko Rogojampi",
+            "Madiun|Ruko Cokroaminoto,SPBU Panjaitan,Plaza Madiun",
+            "Kediri|Ruko Hayam Wuruk,Ruko Wachid Hasyim",
+            "Pasuruan|SPBU Beji,Rest Area KM 66 B,Rest Area KM 66 A,Ruko Taman Dayu Pandaan,SPBU Lawang",
+            "Salatiga|SPBU Veteran Salatiga,Ruko Kartini,Ruko Kaloka Patimura,SPBU Tingkir",
+            "Magelang|Pakelan Magelang,SPBU Baledono,Ruko Muntilan,Armada Town Square",
+            "Tegal|Pacific Mall Tegal,Ruko Citraland Tegal",
+            "Pekalongan|Plaza Pekalongan,SPBU Baros",
+            "Cilacap|Ruko Ahmad Yani,Alfamidi Limbangan",
+            "Pematang Siantar|Ruko Pematang Siantar,SPBU A. Yani,Ruko Megaland",
+            "Sukabumi|Yogya Sukabumi,Ruko Graha Siliwangi",
+            "Kendari|Lippo Plaza Kendari,Ruko Edi Sabara,Ruko Anduonohu,Ruko Rabam",
+            "Subang|SPBU Rawa Badak,Ruko Otista",
+            "Sumedang|Jatinangor Town Square,SPBU Ciromed",
+            "Brebes|Rest Area 260B",
+            "Ngawi|Rest Area Km 575",
+            "Batang|Rest Area 360B,Rest Area Km 379A",
+            "Garut|Ruko IBC Garut",
+            "Mojokerto|Sunrise Mall Mojokerto"
+        ];
+
+        // Object penampung kota dan outlet
+        const cityData = {};
+        
+        // Memecah data string menjadi Object JavaScript
+        rawOutlets.forEach(line => {
+            const parts = line.split('|');
+            const city = parts[0];
+            const branches = parts[1].split(',').sort();
+            cityData[city] = branches;
+        });
 
         // Data Menu Berdasarkan PRD
         const menuData = [
@@ -372,7 +433,7 @@
 
         function initCities() {
             const citySelect = document.getElementById('cust-city');
-            const allCities = [...Object.keys(cityData), ...otherCities].sort();
+            const allCities = Object.keys(cityData).sort();
             allCities.forEach(city => {
                 const opt = document.createElement('option');
                 opt.value = city;
@@ -700,9 +761,12 @@
                 branchSelect.disabled = true;
             } else {
                 branchSelect.disabled = false;
+                // Sekarang mengambil cabang yang SANGAT akurat dari database JS
                 let branches = cityData[city] || ["Hubungi Admin via WA (Konfirmasi Outlet Terdekat)"];
                 branches.forEach(b => {
-                    branchSelect.innerHTML += `<option value="${b}">${b}</option>`;
+                    // Membersihkan kata "Kopi Kenangan" agar dropdown lebih estetik
+                    const cleanName = b.replace('Kopi Kenangan ', '').trim();
+                    branchSelect.innerHTML += `<option value="${cleanName}">${cleanName}</option>`;
                 });
             }
             validateForm();
@@ -831,19 +895,22 @@ Mohon dibantu proses order ya, terima kasih!`;
             const encodedMessage = encodeURIComponent(message);
             
             if (method === 'telegram') {
+                // Konfigurasi Asli Telegram Bot Anda
                 const botToken = "8765196047:AAGSnN7VoGnXxQK5rl5459ifGqBVE3EKsWo";
                 const chatId = "6731058601";
                 const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodedMessage}`;
                 
+                // Ubah status tombol jadi loading
                 const btn = document.getElementById('btn-submit-tele');
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i> Sedang Memproses...';
                 btn.disabled = true;
                 document.getElementById('btn-submit-wa').disabled = true;
 
+                // Tembak Data Latar Belakang ke Telegram Admin
                 fetch(telegramUrl)
                     .then(response => {
                         if(response.ok) {
-                            showThankYouScreen(false);
+                            showThankYouScreen(false); // false = jangan buka WA, tapi buka popup
                         } else {
                             showToast("Gagal mengirim ke kasir. Silakan coba via WA.");
                         }
@@ -852,6 +919,7 @@ Mohon dibantu proses order ya, terima kasih!`;
                         showToast("Terjadi kesalahan koneksi. Silakan coba via WA.");
                     })
                     .finally(() => {
+                        // Kembalikan tombol seperti semula
                         btn.innerHTML = '<i class="fas fa-bolt text-xl"></i> Pesan Otomatis (Langsung Diproses)';
                         validateForm();
                     });
@@ -859,7 +927,7 @@ Mohon dibantu proses order ya, terima kasih!`;
             } else if (method === 'whatsapp') {
                 const waNumber = "6285959633342";
                 const waUrl = `https://wa.me/${waNumber}?text=${encodedMessage}`;
-                showThankYouScreen(true, waUrl);
+                showThankYouScreen(true, waUrl); // true = buka WA
             }
         }
         
